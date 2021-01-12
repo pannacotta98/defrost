@@ -1,7 +1,8 @@
 export enum GroceryType {
   Bread,
   Meat,
-  Fish, // TODO
+  Fish,
+  // TODO
 }
 
 export interface GroceryItem {
@@ -9,5 +10,6 @@ export interface GroceryItem {
   expiresBy: Date | undefined;
   added: Date;
   type: GroceryType[];
-  // addedBy: string; // Id of user that added the item
+  // addedBy: string; // uid of who added the item
+  // note?: string; // Maybe idk
 }

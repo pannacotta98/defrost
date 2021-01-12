@@ -20,7 +20,7 @@ const ItemList: React.FC<Props> = ({ items }) => {
 
   return (
     <>
-      <div>
+      <div className="columns">
         {filteredAndSortedItems.map((item, idx) => (
           <ListItem item={item} key={idx} /> // TODO Use id instead of index probably
         ))}

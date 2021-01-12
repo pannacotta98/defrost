@@ -1,10 +1,13 @@
+import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { auth } from '../logic/firebase';
 
 const SignOut = () => {
   return (
     auth.currentUser && (
-      <button className="button is-danger" onClick={() => auth.signOut()}>
-        Sign out
+      <button className="button is-danger is-light" onClick={() => auth.signOut()}>
+        <FontAwesomeIcon icon={faSignOutAlt} />
+        &nbsp;&nbsp;Sign out
       </button>
     )
   );
