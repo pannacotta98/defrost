@@ -1,21 +1,15 @@
 import React from 'react';
-import { useState } from 'react';
 import './App.sass';
 import Nav from './components/Nav';
 import AddItem from './components/AddItem';
 import { GroceryItem, GroceryType } from './logic/GroceryItem';
 import ItemList from './components/ItemList';
+import SignIn from './components/SignIn';
+import SignOut from './components/SignOut';
 // Firebase imports
-import firebase from 'firebase/app';
-import 'firebase/analytics';
-import 'firebase/auth';
-import 'firebase/firestore';
-import firebaseConfig from './firebaseConfig';
+import { auth, firestore } from './logic/firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
-// Icons
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 
 //#region
 const exampleItem1: GroceryItem = {
@@ -48,50 +42,6 @@ const exampleItem4: GroceryItem = {
 
 const items = [exampleItem1, exampleItem2, exampleItem3, exampleItem4];
 //#endregion
-
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-} else {
-  firebase.app(); // if already initialized, use that one
-}
-const auth = firebase.auth();
-const firestore = firebase.firestore();
-
-const SignIn = () => {
-  const [loginInProgress, setLoginInProgress] = useState(false);
-
-  const googleSignIn = () => {
-    setLoginInProgress(true); // TODO Handle fails?
-    const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithPopup(provider);
-  };
-  return (
-    <div className="columns mt-6 is-vcentered">
-      <div className="column">
-        <h1 className="subtitle is-3 has-text-centered">Log in to continue</h1>
-        <div className="has-text-centered mt-6">
-          <button
-            className={`button is-primary ${loginInProgress && 'is-loading'}`}
-            onClick={googleSignIn}
-          >
-            <FontAwesomeIcon icon={faGoogle} />
-            &nbsp;&nbsp;Sign in with Google
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const SignOut = () => {
-  return (
-    auth.currentUser && (
-      <button className="button is-danger" onClick={() => auth.signOut()}>
-        Sign out
-      </button>
-    )
-  );
-};
 
 interface UserData {
   // TODO

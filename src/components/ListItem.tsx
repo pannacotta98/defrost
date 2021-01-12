@@ -2,12 +2,7 @@ import React from 'react';
 import { GroceryItem } from '../logic/GroceryItem';
 import { dayDiff } from '../logic/util';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faExclamationTriangle,
-  faExclamation,
-  faExclamationCircle,
-  faTimes,
-} from '@fortawesome/free-solid-svg-icons';
+import { faExclamationCircle, faTimes } from '@fortawesome/free-solid-svg-icons';
 
 // TODO The items are too wide
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { GroceryItem, GroceryType } from '../logic/GroceryItem';
+import { GroceryItem } from '../logic/GroceryItem';
 import ListItem from './ListItem';
 
 interface Props {
