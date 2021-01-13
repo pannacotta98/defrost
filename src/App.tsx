@@ -16,28 +16,32 @@ const exampleItem1: GroceryItem = {
   name: 'Example grocery item 1',
   added: new Date(),
   expiresBy: new Date('2021-01-01'),
-  type: [GroceryType.MEAT, GroceryType.FISH],
+  type: GroceryType.MEAT,
+  addedBy: 'öööhh',
 };
 
 const exampleItem2: GroceryItem = {
   name: 'Example grocery item 2',
   added: new Date(),
   expiresBy: new Date('2021-01-11'),
-  type: [GroceryType.MEAT],
+  type: GroceryType.MEAT,
+  addedBy: 'öööhh',
 };
 
 const exampleItem3: GroceryItem = {
   name: 'Example grocery item 3',
   added: new Date(),
   expiresBy: new Date('2021-01-12'),
-  type: [GroceryType.BREAD],
+  type: GroceryType.BREAD,
+  addedBy: 'öööhh',
 };
 
 const exampleItem4: GroceryItem = {
   name: 'Example grocery item 4',
   added: new Date(),
   expiresBy: new Date('2021-07-12'),
-  type: [GroceryType.FISH],
+  type: GroceryType.UNSET,
+  addedBy: 'öööhh',
 };
 
 const items = [exampleItem1, exampleItem2, exampleItem3, exampleItem4];
@@ -87,7 +91,7 @@ function App() {
     <>
       <Nav />
       <section className="section">
-        {!user ? (
+        {user ? (
           <>
             <AddItem />
             <ItemList items={items} />
@@ -96,7 +100,7 @@ function App() {
           <SignIn />
         )}
         <SignOut />
-        <TestThing />
+        {/* <TestThing /> */}
       </section>
     </>
   );
