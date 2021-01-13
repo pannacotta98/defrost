@@ -1,7 +1,8 @@
 export enum GroceryType {
-  Bread,
-  Meat,
-  Fish,
+  UNSET = 'Unset',
+  BREAD = 'Bread',
+  MEAT = 'Meat',
+  FISH = 'Fish',
   // TODO
 }
 
@@ -10,6 +11,7 @@ export interface GroceryItem {
   expiresBy: Date | undefined;
   added: Date;
   type: GroceryType[];
+  // location: ...
   // addedBy: string; // uid of who added the item
   // note?: string; // Maybe idk
 }

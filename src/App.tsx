@@ -16,37 +16,59 @@ const exampleItem1: GroceryItem = {
   name: 'Example grocery item 1',
   added: new Date(),
   expiresBy: new Date('2021-01-01'),
-  type: [GroceryType.Meat, GroceryType.Fish],
+  type: [GroceryType.MEAT, GroceryType.FISH],
 };
 
 const exampleItem2: GroceryItem = {
   name: 'Example grocery item 2',
   added: new Date(),
   expiresBy: new Date('2021-01-11'),
-  type: [GroceryType.Meat],
+  type: [GroceryType.MEAT],
 };
 
 const exampleItem3: GroceryItem = {
   name: 'Example grocery item 3',
   added: new Date(),
   expiresBy: new Date('2021-01-12'),
-  type: [GroceryType.Bread],
+  type: [GroceryType.BREAD],
 };
 
 const exampleItem4: GroceryItem = {
   name: 'Example grocery item 4',
   added: new Date(),
   expiresBy: new Date('2021-07-12'),
-  type: [GroceryType.Fish],
+  type: [GroceryType.FISH],
 };
 
 const items = [exampleItem1, exampleItem2, exampleItem3, exampleItem4];
 //#endregion
 
+//#region Test stuff
 interface UserData {
   // TODO
   test: string;
 }
+
+// firestore.collection("cities").add(exampleItem1)
+// .then(function(docRef) {
+//   console.log("Document written with ID: ", docRef.id);
+// })
+// .catch(function(error) {
+//   console.error("Error adding document: ", error);
+// });
+
+// // Add a new document in collection "cities"
+// firestore.collection("cities").doc("LA").set({
+//   name: "Los Angeles",
+//   state: "CA",
+//   country: "USA"
+// })
+// .then(function() {
+//   console.log("Document successfully written!");
+// })
+// .catch(function(error) {
+//   alert(error);
+// });
 
 const TestThing = () => {
   const contentRef = firestore.collection('user');
@@ -56,6 +78,7 @@ const TestThing = () => {
 
   return <div>{content && content.map((c) => <p>{(c as UserData).test}</p>)}</div>;
 };
+//#endregion
 
 function App() {
   const [user] = useAuthState(auth);
@@ -64,7 +87,7 @@ function App() {
     <>
       <Nav />
       <section className="section">
-        {user ? (
+        {!user ? (
           <>
             <AddItem />
             <ItemList items={items} />
