@@ -3,10 +3,10 @@ import { useState } from 'react';
 import { GroceryItem, GroceryType } from '../logic/GroceryItem';
 import { isValidDate } from '../logic/util';
 import { Formik, Form, Field, ErrorMessage, FormikErrors } from 'formik';
-import { auth } from '../logic/firebase';
-import { updateThrow } from 'typescript';
+import { auth, firestore } from '../logic/firebase';
 
 interface FormValues {
+  // TODO Fix
   name: string;
   expDate: string;
 }
@@ -30,13 +30,7 @@ export default function AddItem() {
         let errors: FormikErrors<FormValues> = {};
 
         if (values.name === '') errors.name = 'Required';
-        if (!isValidDate(values.expDate)) errors.expDate = 'Invalid date';
-
-        // if (!values.email) {
-        //   errors.email = 'Required';
-        // } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)) {
-        //   errors.email = 'Invalid email address';
-        // }
+        if (!isValidDate(values.expDate) && values.expDate !== '') errors.expDate = 'Invalid date';
 
         return errors;
       }}
@@ -47,10 +41,23 @@ export default function AddItem() {
             expiresBy: values.expDate !== '' ? new Date(values.expDate) : undefined,
             type: values.type,
             added: new Date(),
-            addedBy: auth.currentUser?.uid,
+            addedBy: auth.currentUser.uid,
           };
 
           console.log(newItem);
+
+          firestore
+            .collection('cities')
+            .doc('LA')
+            .set(newItem)
+            .then(function () {
+              console.log('Document successfully written!');
+            })
+            .catch(function (error) {
+              console.log(error);
+            });
+        } else {
+          alert('Well, this should should not happen... Could not add the item :(');
         }
         // setTimeout(() => {
         //   alert(JSON.stringify(values, null, 2));

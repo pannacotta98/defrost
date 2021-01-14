@@ -10,6 +10,7 @@ import SignOut from './components/SignOut';
 import { auth, firestore } from './logic/firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
+import { useState } from 'react';
 
 //#region
 const exampleItem1: GroceryItem = {
@@ -85,23 +86,24 @@ const TestThing = () => {
 //#endregion
 
 function App() {
-  const [user] = useAuthState(auth);
+  const [user, isLoading, error] = useAuthState(auth);
+  const [activeListId, setActiveListId] = useState<null | string>(null);
 
   return (
     <>
-      <Nav />
-      <section className="section">
-        {user ? (
-          <>
+      {user ? (
+        <>
+          <Nav activeListId={activeListId} setActiveListId={setActiveListId} />
+          <section className="section">
             <AddItem />
             <ItemList items={items} />
-          </>
-        ) : (
-          <SignIn />
-        )}
-        <SignOut />
-        {/* <TestThing /> */}
-      </section>
+          </section>
+        </>
+      ) : (
+        <SignIn />
+      )}
+      <SignOut />
+      {/* <TestThing /> */}
     </>
   );
 }
