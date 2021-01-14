@@ -8,10 +8,7 @@ import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 import { faSnowflake } from '@fortawesome/free-solid-svg-icons';
 
 const SignIn = () => {
-  const [loginInProgress, setLoginInProgress] = useState(false);
-
   const googleSignIn = () => {
-    setLoginInProgress(true); // TODO Handle fails?
     const provider = new firebase.auth.GoogleAuthProvider();
     auth
       .signInWithPopup(provider)
@@ -32,17 +29,14 @@ const SignIn = () => {
         }
       })
       .catch((error) => {
-        // Handle Errors here.
-        var errorCode = error.code;
+        // // Handle Errors here.
+        // var errorCode = error.code;
         var errorMessage = error.message;
-        // The email of the user's account used.
-        var email = error.email;
-        // The firebase.auth.AuthCredential type that was used.
-        var credential = error.credential;
-
+        // // The email of the user's account used.
+        // var email = error.email;
+        // // The firebase.auth.AuthCredential type that was used.
+        // var credential = error.credential;
         alert(errorMessage);
-        // alert(credential);
-        setLoginInProgress(false);
       });
   };
 
@@ -51,12 +45,6 @@ const SignIn = () => {
       <div className="hero-head"></div>
       <div className="hero-body">
         <div className="container has-text-centered">
-          {/* <h1
-            style={{ fontSize: '8rem' }}
-            className="title has-text-weight-normal is-1 has-text-centered"
-          >
-            <FontAwesomeIcon icon={faSnowflake} />
-          </h1> */}
           <h1 className="title has-text-weight-medium is-1 has-text-centered">
             Keep track of your food
           </h1>
@@ -64,11 +52,7 @@ const SignIn = () => {
         </div>
       </div>
       <div className="hero-foot has-text-centered mt-6">
-        <button
-          className={`button is-primary is-inverted is-medium mb-6
-            ${loginInProgress && 'is-loading'}`}
-          onClick={googleSignIn}
-        >
+        <button className={`button is-primary is-inverted is-medium mb-6`} onClick={googleSignIn}>
           <FontAwesomeIcon icon={faGoogle} />
           &nbsp;&nbsp;Sign in with Google
         </button>

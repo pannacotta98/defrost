@@ -104,6 +104,9 @@ function App() {
       )}
       <SignOut />
       {/* <TestThing /> */}
+      <div className={`pageloader ${isLoading && 'is-active'}`}>
+        {/* <span className="title">Logging in</span> */}
+      </div>
     </>
   );
 }
