@@ -65,13 +65,18 @@ export default function AddItem() {
         // }, 400);
       }}
     >
-      {({ isSubmitting, values }) => (
+      {({ isSubmitting, values, errors }) => (
         <Form className="container">
           <h1 className="title">New item</h1>
           <div className="field">
             <label className="label">Item</label>
             <div className="control">
-              <Field className="input" type="text" name="name" placeholder="Suspicious meat" />
+              <Field
+                className={`input ${errors.name && 'is-danger'}`}
+                type="text"
+                name="name"
+                placeholder="Suspicious meat"
+              />
             </div>
             <ErrorMessage className="help is-danger" name="name" component="div" />
           </div>
@@ -84,7 +89,7 @@ export default function AddItem() {
             </label>
             <div className="control">
               <Field
-                className={`input`}
+                className={`input ${errors.expDate && 'is-danger'}`}
                 type="text"
                 name="expDate"
                 pattern="[0-9\-]*"

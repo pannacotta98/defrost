@@ -13,6 +13,7 @@ interface Props {
 
 const Nav: React.FC<Props> = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isCreateListOpen, setIsCreateListOpen] = useState(false);
 
   return (
     <>
@@ -56,20 +57,17 @@ const Nav: React.FC<Props> = () => {
 
               <div className="navbar-dropdown">
                 <a className="navbar-item">My great list</a>
+
                 <hr className="navbar-divider" />
-                <a className="navbar-item">
-                  <FontAwesomeIcon icon={faPlus} />
-                  &nbsp;&nbsp;Create new list
-                </a>
-                <a className="navbar-item">
+
+                <CreateList />
+
+                {/* <a className="navbar-item">
                   <FontAwesomeIcon icon={faShareAlt} />
                   &nbsp;&nbsp;List sharing
-                </a>
+                </a> */}
               </div>
             </div>
-
-            {/* <a className="navbar-item">Home</a>
-          <a className="navbar-item">Documentation</a> */}
           </div>
 
           <hr className="" />
@@ -97,8 +95,6 @@ const Nav: React.FC<Props> = () => {
           </div>
         </div>
       </nav>
-
-      {/* <CreateList /> */}
     </>
   );
 };
