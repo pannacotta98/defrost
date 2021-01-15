@@ -27,7 +27,7 @@ const CreateList = (props: Props) => {
           <div className="modal-content">
             <div className="box">
               <Formik
-                initialValues={{ name: '' }}
+                initialValues={{ name: '', sharedWith: [] }}
                 validate={(values: FormValues) => {
                   let errors: FormikErrors<FormValues> = {};
                   if (values.name === '') errors.name = 'Required';
@@ -79,10 +79,13 @@ const CreateList = (props: Props) => {
                     </div>
 
                     {/* TODO Fix parameters and things */}
-                    {/* <div className="field">
+                    <div className="field is-grouped-multiline">
                       <label className="label">Shared with</label>
+                      <p className="control">
+                        <a className="button">One</a>
+                      </p>
                       <div className="field has-addons">
-                        <div className="control">
+                        <div className="control is-expanded">
                           <Field
                             className="input"
                             type="text"
@@ -90,15 +93,15 @@ const CreateList = (props: Props) => {
                             placeholder="Kyyyyyylskåp"
                           />
                         </div>
-                        <p className="control">
+                        {/* <p className="control">
                           <a className="button is-static">@gmail.com</a>
-                        </p>
+                        </p> */}
                         <div className="control">
                           <a className="button is-primary">Share</a>
                         </div>
                         <ErrorMessage className="help is-danger" name="name" component="div" />
                       </div>
-                    </div> */}
+                    </div>
 
                     <div className="field mt-5">
                       {/* <hr /> */}
@@ -107,6 +110,7 @@ const CreateList = (props: Props) => {
                           Create
                         </button>
                         <button
+                          type="button"
                           className="button is-primary is-light"
                           onClick={() => setIsModalOpen(false)}
                         >
