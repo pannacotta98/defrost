@@ -44,7 +44,7 @@ interface Props {
 
 const ListItem: React.FC<Props> = ({ item }) => {
   return (
-    <a href="#" className="panel-block columns is-mobile">
+    <label className="panel-block columns is-mobile">
       <div className="column">
         <h2 className="is-size-5">{item.name}</h2>
         <ExpText expDate={item.expiresBy} />
@@ -70,7 +70,7 @@ const ListItem: React.FC<Props> = ({ item }) => {
           </div>
         </div> */}
       </div>
-    </a>
+    </label>
   );
 };
 

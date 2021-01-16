@@ -1,11 +1,8 @@
 import React from 'react';
-import { useState } from 'react';
 import { firebase, auth, firestore } from '../logic/firebase';
-
 // Icons
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
-import { faSnowflake } from '@fortawesome/free-solid-svg-icons';
 
 const SignIn = () => {
   const googleSignIn = () => {

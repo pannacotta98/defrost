@@ -2,11 +2,13 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Formik, Form, Field, ErrorMessage, FormikErrors } from 'formik';
 import React, { useState } from 'react';
-import { auth, firestore } from '../logic/firebase';
+import { auth } from '../logic/firebase';
 
 interface FormValues {
   // TODO Fix
   name: string;
+  sharedWith: string[];
+  addShare: string;
 }
 
 interface Props {}
@@ -14,12 +16,14 @@ interface Props {}
 const CreateList = (props: Props) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const initialValues: FormValues = { name: '', sharedWith: [], addShare: '' };
+
   return (
     <>
-      <a className="navbar-item" onClick={() => setIsModalOpen(true)}>
+      <div className="navbar-item" onClick={() => setIsModalOpen(true)}>
         <FontAwesomeIcon icon={faPlus} />
         &nbsp;&nbsp;Create new list
-      </a>
+      </div>
 
       {isModalOpen && (
         <div className="modal is-active">
@@ -27,12 +31,17 @@ const CreateList = (props: Props) => {
           <div className="modal-content">
             <div className="box">
               <Formik
-                initialValues={{ name: '', sharedWith: [] }}
+                initialValues={initialValues}
                 validate={(values: FormValues) => {
                   let errors: FormikErrors<FormValues> = {};
+
                   if (values.name === '') errors.name = 'Required';
                   else {
                     // TODO Probably check for duplicate names
+                  }
+
+                  if (values.addShare) {
+                    // TODO should i validate
                   }
 
                   return errors;
@@ -81,26 +90,34 @@ const CreateList = (props: Props) => {
                     {/* TODO Fix parameters and things */}
                     <div className="field is-grouped-multiline">
                       <label className="label">Shared with</label>
-                      <p className="control">
-                        <a className="button">One</a>
-                      </p>
+
+                      <div className="field">
+                        <p className="control">
+                          <button className="button is-danger is-outlined">mail@mail.se</button>
+                        </p>
+                      </div>
+
                       <div className="field has-addons">
                         <div className="control is-expanded">
                           <Field
                             className="input"
-                            type="text"
-                            name="name"
-                            placeholder="Kyyyyyylskåp"
+                            type="email"
+                            name="addShare"
+                            placeholder="mdfklsjdfkl"
                           />
                         </div>
+
                         {/* <p className="control">
                           <a className="button is-static">@gmail.com</a>
                         </p> */}
+
                         <div className="control">
-                          <a className="button is-primary">Share</a>
+                          <button type="button" className="button is-primary" disabled>
+                            Share
+                          </button>
                         </div>
-                        <ErrorMessage className="help is-danger" name="name" component="div" />
                       </div>
+                      {/* <ErrorMessage className="help is-danger" name="name" component="div" /> */}
                     </div>
 
                     <div className="field mt-5">

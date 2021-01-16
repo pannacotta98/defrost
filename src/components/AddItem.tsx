@@ -1,5 +1,4 @@
 import React from 'react';
-import { useState } from 'react';
 import { GroceryItem, GroceryType } from '../logic/GroceryItem';
 import { isValidDate } from '../logic/util';
 import { Formik, Form, Field, ErrorMessage, FormikErrors } from 'formik';

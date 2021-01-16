@@ -1,5 +1,3 @@
-import { faPlus, faShare, faShareAlt } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import { useState } from 'react';
 import { auth } from '../logic/firebase';
@@ -13,14 +11,14 @@ interface Props {
 
 const Nav: React.FC<Props> = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isCreateListOpen, setIsCreateListOpen] = useState(false);
+  // const [isCreateListOpen, setIsCreateListOpen] = useState(false);
 
   return (
     <>
       <nav className="navbar is-primary" role="navigation" aria-label="main navigation">
         <div className="navbar-brand">
           <h1 className="has-text-weight-bold navbar-item">Freezer</h1>
-          <a
+          <div
             role="button"
             className="navbar-burger"
             aria-label="menu"
@@ -31,7 +29,7 @@ const Nav: React.FC<Props> = () => {
             <span aria-hidden="true"></span>
             <span aria-hidden="true"></span>
             <span aria-hidden="true"></span>
-          </a>
+          </div>
         </div>
         {/* <div className="navbar-end">
         <div className="navbar-item">Settings</div>
@@ -53,10 +51,10 @@ const Nav: React.FC<Props> = () => {
         <div className={`navbar-menu ${isMenuOpen ? 'is-active' : ''}`}>
           <div className="navbar-start">
             <div className="navbar-item has-dropdown is-hoverable">
-              <a className="navbar-link">Selected list</a>
+              <div className="navbar-link">Selected list</div>
 
               <div className="navbar-dropdown">
-                <a className="navbar-item">My great list</a>
+                <div className="navbar-item">My great list</div>
 
                 <hr className="navbar-divider" />
 
@@ -75,14 +73,18 @@ const Nav: React.FC<Props> = () => {
           <div className="navbar-end">
             <div className="navbar-item">
               {auth && (
-                <a className="navbar-link">
+                <div className="navbar-link">
                   {auth.currentUser?.photoURL && (
                     <figure className="image">
-                      <img className="is-rounded" src={auth.currentUser.photoURL} />
+                      <img
+                        className="is-rounded"
+                        src={auth.currentUser.photoURL}
+                        alt="Logged in user"
+                      />
                     </figure>
                   )}
                   {auth.currentUser?.displayName}
-                </a>
+                </div>
               )}
               <div className="buttons">
                 {/* <a className="button is-primary">
