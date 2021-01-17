@@ -1,3 +1,5 @@
+import { faFilter, faPlus, faSortAmountUpAlt } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import { GroceryItem } from '../other/GroceryItem';
 import ListItem from './ListItem';
@@ -19,14 +21,17 @@ const ItemList: React.FC<Props> = ({ items }) => {
   const filteredAndSortedItems = items.filter(filterCondition).sort(sortCondition);
 
   return (
-    <>
+    <div className="has-navbar-fixed-bottom">
       <div className="columns">
         {filteredAndSortedItems.map((item, idx) => (
           <ListItem item={item} key={idx} /> // TODO Use id instead of index probably
         ))}
       </div>
-      <div className="navbar is-fixed-bottom is-primary columns is-mobile has-dropdown has-dropdown-up">
-        <button className="navbar-item column">Hej 1</button>
+      <div className="navbar is-fixed-bottom is-primary columns is-mobile has-dropdown has-dropdown-up mb-0">
+        <button className="button is-multiline is-primary navbar-item column">
+          <FontAwesomeIcon icon={faFilter} />
+          <p>Filter</p>
+        </button>
         {/* <div className="navbar-dropdown">
           <a className="navbar-item">Overview</a>
           <a className="navbar-item">Elements</a>
@@ -34,10 +39,16 @@ const ItemList: React.FC<Props> = ({ items }) => {
           <hr className="navbar-divider" />
           <div className="navbar-item">Version 0.9.1</div>
         </div> */}
-        <button className="navbar-item column">Hej 2</button>
-        <button className="navbar-item column">Hej 3</button>
+        <button className="button is-multiline is-primary navbar-item column">
+          <FontAwesomeIcon icon={faSortAmountUpAlt} />
+          <p>Sort</p>
+        </button>
+        <button className="button is-multiline is-primary navbar-item column">
+          <FontAwesomeIcon icon={faPlus} />
+          <p>Add item</p>
+        </button>
       </div>
-    </>
+    </div>
   );
 };
 
