@@ -28,12 +28,12 @@ const Nav: React.FC<Props> = ({ activeListId, setActiveListId, user }) => {
         ) : listsLoading ? (
           <div className="navbar-item">Loading...</div>
         ) : (
-          <div className="navbar-item">{listsError}</div>
+          listsError && <div className="navbar-item">{listsError}</div>
         )}
 
         <hr className="navbar-divider" />
 
-        <CreateList />
+        <CreateList user={user} />
       </div>
     </div>
   );
@@ -53,6 +53,24 @@ const Nav: React.FC<Props> = ({ activeListId, setActiveListId, user }) => {
     </div>
   );
 
+  const AccountInfo = () => (
+    <div className="navbar-end">
+      <div className="navbar-item">
+        <div className="navbar-link">
+          {user.photoURL && (
+            <figure className="image">
+              <img className="is-rounded" src={user.photoURL} alt="Logged in user" />
+            </figure>
+          )}
+          {auth.currentUser?.displayName}
+        </div>
+        <div className="buttons">
+          <SignOut />
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <>
       <nav className="navbar is-primary" role="navigation" aria-label="main navigation">
@@ -68,21 +86,7 @@ const Nav: React.FC<Props> = ({ activeListId, setActiveListId, user }) => {
 
           <hr className="" />
 
-          <div className="navbar-end">
-            <div className="navbar-item">
-              <div className="navbar-link">
-                {user.photoURL && (
-                  <figure className="image">
-                    <img className="is-rounded" src={user.photoURL} alt="Logged in user" />
-                  </figure>
-                )}
-                {auth.currentUser?.displayName}
-              </div>
-              <div className="buttons">
-                <SignOut />
-              </div>
-            </div>
-          </div>
+          <AccountInfo />
         </div>
       </nav>
     </>

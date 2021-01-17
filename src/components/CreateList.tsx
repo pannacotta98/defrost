@@ -2,20 +2,21 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Formik, Form, Field, ErrorMessage, FormikErrors } from 'formik';
 import React, { useState } from 'react';
-import { auth, firestore } from '../logic/firebase';
+import { firebase, firestore } from '../logic/firebase';
+import serverTypes from './../logic/serverTypes';
 
 interface FormValues {
-  // TODO Fix this
   name: string;
-  sharedWith: any[];
+  sharedWith: serverTypes.User[];
 }
 
-interface Props {}
+interface Props {
+  user: firebase.User;
+}
 
-const CreateList = (props: Props) => {
+const CreateList = ({ user }: Props) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // TODO Fix any
   const initialValues: FormValues = { name: '', sharedWith: [] };
 
   return (
@@ -43,31 +44,27 @@ const CreateList = (props: Props) => {
                   return errors;
                 }}
                 onSubmit={(values, { setSubmitting }) => {
-                  if (auth.currentUser) {
-                    const list = {
-                      name: values.name,
-                      owner: auth.currentUser.uid,
-                      sharedWith: values.sharedWith.map((user) => user.uid),
-                    };
+                  const list = {
+                    name: values.name,
+                    owner: user.uid,
+                    sharedWith: values.sharedWith.map((user) => user.uid),
+                  };
 
-                    // Create list
-                    firestore
-                      .collection('itemLists')
-                      .add(list)
-                      .then((docRef) => {
-                        // firestore.collection('users').doc(docRef.id).
-                        console.log('Document successfully written!');
-                      })
-                      .catch((error) => {
-                        console.log(error);
-                      });
+                  // Create list
+                  firestore
+                    .collection('itemLists')
+                    .add(list)
+                    .then((docRef) => {
+                      // firestore.collection('users').doc(docRef.id).
+                      console.log('Document successfully written!');
+                    })
+                    .catch((error) => {
+                      console.log(error);
+                    });
 
-                    // TODO Maybe I should add the ids to the user?
+                  // TODO Maybe I should add the ids to the user?
 
-                    setIsModalOpen(false);
-                  } else {
-                    alert('Well, this should should not happen... Could not add the item :(');
-                  }
+                  setIsModalOpen(false);
                 }}
               >
                 {({ isSubmitting, values, errors, setFieldValue }) => {
@@ -106,38 +103,31 @@ const CreateList = (props: Props) => {
                           validateOnBlur={true}
                           validateOnChange={false}
                           validate={async (values) => {
-                            if (auth.currentUser) {
-                              const query = firestore
-                                .collection('users')
-                                .where('email', '==', values.email);
+                            const query = firestore
+                              .collection('users')
+                              .where('email', '==', values.email);
 
-                              const snapshot = await query.get({
-                                source: 'server',
-                              });
+                            const snapshot = await query.get({
+                              source: 'server',
+                            });
 
-                              if (!snapshot.empty) {
-                                return snapshot.docs[0].data().uid === auth.currentUser.uid
-                                  ? { email: 'Well, that’s your own email...' }
-                                  : {}; // No errors if exist and is not the same as current user
-                              }
-
-                              return { email: 'No user with that email exist' };
-                            } else {
-                              // TODO
-                              alert('ohnay');
+                            if (!snapshot.empty) {
+                              return snapshot.docs[0].data().uid === user.uid
+                                ? { email: 'Well, that’s your own email...' }
+                                : {}; // No errors if exist and is not the same as current user
                             }
+
+                            return { email: 'No user with that email exist' };
                           }}
                           onSubmit={async (values, { setSubmitting }) => {
-                            if (auth.currentUser) {
-                              const snapshot = await firestore
-                                .collection('users')
-                                .where('email', '==', values.email)
-                                .get();
-                              setFieldValue(
-                                'sharedWith',
-                                sharedWithValue.concat(snapshot.docs[0].data())
-                              );
-                            }
+                            const snapshot = await firestore
+                              .collection('users')
+                              .where('email', '==', values.email)
+                              .get();
+                            setFieldValue(
+                              'sharedWith',
+                              sharedWithValue.concat(snapshot.docs[0].data() as serverTypes.User)
+                            );
                           }}
                         >
                           {({ errors, submitForm }) => (
@@ -168,8 +158,6 @@ const CreateList = (props: Props) => {
                             </div>
                           )}
                         </Formik>
-
-                        {/* <ErrorMessage className="help is-danger" name="name" component="div" /> */}
                       </div>
 
                       <div className="field mt-5">
