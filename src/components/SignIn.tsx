@@ -20,6 +20,7 @@ const SignIn = () => {
               email: result.user.email,
               name: result.user.displayName,
               photoUrl: result.user.photoURL,
+              uid: uid,
             },
             { merge: true }
           );

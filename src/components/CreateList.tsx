@@ -2,13 +2,12 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Formik, Form, Field, ErrorMessage, FormikErrors } from 'formik';
 import React, { useState } from 'react';
-import { auth } from '../logic/firebase';
+import { auth, firestore } from '../logic/firebase';
 
 interface FormValues {
-  // TODO Fix
+  // TODO Fix this
   name: string;
-  sharedWith: string[];
-  addShare: string;
+  sharedWith: any[];
 }
 
 interface Props {}
@@ -16,7 +15,8 @@ interface Props {}
 const CreateList = (props: Props) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const initialValues: FormValues = { name: '', sharedWith: [], addShare: '' };
+  // TODO Fix any
+  const initialValues: FormValues = { name: '', sharedWith: [] };
 
   return (
     <>
@@ -40,30 +40,29 @@ const CreateList = (props: Props) => {
                     // TODO Probably check for duplicate names
                   }
 
-                  if (values.addShare) {
-                    // TODO should i validate
-                  }
-
                   return errors;
                 }}
                 onSubmit={(values, { setSubmitting }) => {
                   if (auth.currentUser) {
-                    const newItem = {
+                    const list = {
                       name: values.name,
+                      owner: auth.currentUser.uid,
+                      sharedWith: values.sharedWith.map((user) => user.uid),
                     };
 
-                    console.log(newItem);
+                    // Create list
+                    firestore
+                      .collection('itemLists')
+                      .add(list)
+                      .then((docRef) => {
+                        // firestore.collection('users').doc(docRef.id).
+                        console.log('Document successfully written!');
+                      })
+                      .catch((error) => {
+                        console.log(error);
+                      });
 
-                    // firestore
-                    //   .collection('cities')
-                    //   .doc('LA')
-                    //   .set(newItem)
-                    //   .then(function () {
-                    //     console.log('Document successfully written!');
-                    //   })
-                    //   .catch(function (error) {
-                    //     console.log(error);
-                    //   });
+                    // TODO Maybe I should add the ids to the user?
 
                     setIsModalOpen(false);
                   } else {
@@ -71,72 +70,126 @@ const CreateList = (props: Props) => {
                   }
                 }}
               >
-                {({ isSubmitting, values, errors }) => (
-                  <Form>
-                    <h1 className="title">New list</h1>
-                    <div className="field">
-                      <label className="label">Name</label>
-                      <div className="control">
-                        <Field
-                          className={`input ${errors.name && 'is-danger'}`}
-                          type="text"
-                          name="name"
-                          placeholder="Kyyyyyylskåp"
-                        />
-                      </div>
-                      <ErrorMessage className="help is-danger" name="name" component="div" />
-                    </div>
-
-                    {/* TODO Fix parameters and things */}
-                    <div className="field is-grouped-multiline">
-                      <label className="label">Shared with</label>
-
+                {({ isSubmitting, values, errors, setFieldValue }) => {
+                  const sharedWithValue = values.sharedWith;
+                  return (
+                    <Form>
+                      <h1 className="title">New list</h1>
                       <div className="field">
-                        <p className="control">
-                          <button className="button is-danger is-outlined">mail@mail.se</button>
-                        </p>
-                      </div>
-
-                      <div className="field has-addons">
-                        <div className="control is-expanded">
+                        <label className="label">Name</label>
+                        <div className="control">
                           <Field
-                            className="input"
-                            type="email"
-                            name="addShare"
-                            placeholder="mdfklsjdfkl"
+                            className={`input ${errors.name && 'is-danger'}`}
+                            type="text"
+                            name="name"
+                            placeholder="Kyyyyyylskåp"
                           />
                         </div>
+                        <ErrorMessage className="help is-danger" name="name" component="div" />
+                      </div>
 
-                        {/* <p className="control">
-                          <a className="button is-static">@gmail.com</a>
-                        </p> */}
+                      <div className="field is-grouped-multiline">
+                        <label className="label">Shared with</label>
+                        {values.sharedWith.map((value) => (
+                          <div className="field" key={value.uid}>
+                            <p className="control">
+                              <button type="button" className="button">
+                                {value.email}
+                              </button>
+                            </p>
+                          </div>
+                        ))}
 
-                        <div className="control">
-                          <button type="button" className="button is-primary" disabled>
-                            Share
+                        {/* Add share subform */}
+                        <Formik
+                          initialValues={{ email: '' }}
+                          validateOnBlur={true}
+                          validateOnChange={false}
+                          validate={async (values) => {
+                            if (auth.currentUser) {
+                              const query = firestore
+                                .collection('users')
+                                .where('email', '==', values.email);
+
+                              const snapshot = await query.get({
+                                source: 'server',
+                              });
+
+                              if (!snapshot.empty) {
+                                return snapshot.docs[0].data().uid === auth.currentUser.uid
+                                  ? { email: 'Well, that’s your own email...' }
+                                  : {}; // No errors if exist and is not the same as current user
+                              }
+
+                              return { email: 'No user with that email exist' };
+                            } else {
+                              // TODO
+                              alert('ohnay');
+                            }
+                          }}
+                          onSubmit={async (values, { setSubmitting }) => {
+                            if (auth.currentUser) {
+                              const snapshot = await firestore
+                                .collection('users')
+                                .where('email', '==', values.email)
+                                .get();
+                              setFieldValue(
+                                'sharedWith',
+                                sharedWithValue.concat(snapshot.docs[0].data())
+                              );
+                            }
+                          }}
+                        >
+                          {({ errors, submitForm }) => (
+                            <div className="field has-addons">
+                              <div className="control is-expanded">
+                                <Field
+                                  className="input"
+                                  type="email"
+                                  name="email"
+                                  placeholder="mdfklsjdfkl"
+                                />
+                              </div>
+                              <div className="control">
+                                <button
+                                  type="button"
+                                  className="button is-primary"
+                                  onClick={submitForm}
+                                >
+                                  Share
+                                </button>
+                              </div>
+                              {/* TODO Fix position of error message */}
+                              <ErrorMessage
+                                className="help is-danger"
+                                name="email"
+                                component="div"
+                              />
+                            </div>
+                          )}
+                        </Formik>
+
+                        {/* <ErrorMessage className="help is-danger" name="name" component="div" /> */}
+                      </div>
+
+                      <div className="field mt-5">
+                        {/* <hr /> */}
+                        <div className="buttons">
+                          <button className="button is-primary" disabled={isSubmitting}>
+                            Create
+                          </button>
+                          <button
+                            type="button"
+                            className="button is-primary is-light"
+                            onClick={() => setIsModalOpen(false)}
+                          >
+                            Cancel
                           </button>
                         </div>
                       </div>
-                      {/* <ErrorMessage className="help is-danger" name="name" component="div" /> */}
-                    </div>
-
-                    <div className="field mt-5">
-                      {/* <hr /> */}
-                      <div className="buttons">
-                        <button className="button is-primary" disabled={isSubmitting}>
-                          Create
-                        </button>
-                        <button
-                          type="button"
-                          className="button is-primary is-light"
-                          onClick={() => setIsModalOpen(false)}
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    </div>
-                  </Form>
-                )}
+                    </Form>
+                  );
+                }}
               </Formik>
             </div>
           </div>

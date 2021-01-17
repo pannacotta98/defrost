@@ -8,7 +8,7 @@ export enum GroceryType {
 
 export interface GroceryItem {
   name: string;
-  expiresBy: Date | undefined;
+  expiresBy: Date | null;
   added: Date;
   type: GroceryType;
   // location: ...

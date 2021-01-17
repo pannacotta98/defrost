@@ -9,8 +9,8 @@ import { faExclamationCircle, faTimes } from '@fortawesome/free-solid-svg-icons'
 // How many days before expiration date to have warning color
 const WARNING_THRES = 7;
 
-const ExpText: React.FC<{ expDate: Date | undefined }> = ({ expDate }) => {
-  if (expDate === undefined) {
+const ExpText: React.FC<{ expDate: Date | null }> = ({ expDate }) => {
+  if (expDate === null) {
     return <p>No expiration date</p>;
   } else {
     const expiresInDays = dayDiff(new Date(), expDate);

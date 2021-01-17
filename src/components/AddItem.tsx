@@ -37,7 +37,7 @@ export default function AddItem() {
         if (auth.currentUser) {
           const newItem: GroceryItem = {
             name: values.name,
-            expiresBy: values.expDate !== '' ? new Date(values.expDate) : undefined,
+            expiresBy: values.expDate !== '' ? new Date(values.expDate) : null,
             type: values.type,
             added: new Date(),
             addedBy: auth.currentUser.uid,

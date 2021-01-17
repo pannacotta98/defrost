@@ -93,7 +93,7 @@ function App() {
     <>
       {user ? (
         <>
-          <Nav activeListId={activeListId} setActiveListId={setActiveListId} />
+          <Nav activeListId={activeListId} setActiveListId={setActiveListId} user={user} />
           <section className="section">
             <AddItem />
             <ItemList items={items} />
