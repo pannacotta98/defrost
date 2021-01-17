@@ -2,8 +2,8 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Formik, Form, Field, ErrorMessage, FormikErrors } from 'formik';
 import React, { useState } from 'react';
-import { firebase, firestore } from '../logic/firebase';
-import serverTypes from './../logic/serverTypes';
+import { firebase, firestore } from '../other/firebase';
+import serverTypes from '../other/serverTypes';
 
 interface FormValues {
   name: string;

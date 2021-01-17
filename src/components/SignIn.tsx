@@ -1,5 +1,5 @@
 import React from 'react';
-import { firebase, auth, firestore } from '../logic/firebase';
+import { firebase, auth, firestore } from '../other/firebase';
 // Icons
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';

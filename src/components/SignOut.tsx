@@ -1,6 +1,6 @@
 import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { auth } from '../logic/firebase';
+import { auth } from '../other/firebase';
 
 const SignOut = () => {
   return (

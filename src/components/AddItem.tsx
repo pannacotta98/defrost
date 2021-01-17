@@ -1,8 +1,8 @@
 import React from 'react';
-import { GroceryItem, GroceryType } from '../logic/GroceryItem';
-import { isValidDate } from '../logic/util';
+import { GroceryItem, GroceryType } from '../other/GroceryItem';
+import { isValidDate } from '../other/util';
 import { Formik, Form, Field, ErrorMessage, FormikErrors } from 'formik';
-import { auth, firestore } from '../logic/firebase';
+import { auth, firestore } from '../other/firebase';
 
 interface FormValues {
   // TODO Fix

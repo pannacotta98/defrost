@@ -2,14 +2,15 @@ import React from 'react';
 import './App.sass';
 import Nav from './components/Nav';
 import AddItem from './components/AddItem';
-import { GroceryItem, GroceryType } from './logic/GroceryItem';
+import { GroceryItem, GroceryType } from './other/GroceryItem';
 import ItemList from './components/ItemList';
 import SignIn from './components/SignIn';
 import SignOut from './components/SignOut';
 // Firebase imports
-import { auth } from './logic/firebase';
+import { auth } from './other/firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useState } from 'react';
+import serverTypes from './other/serverTypes';
 
 //#region
 const exampleItem1: GroceryItem = {
@@ -87,15 +88,15 @@ const items = [exampleItem1, exampleItem2, exampleItem3, exampleItem4];
 function App() {
   // const [user, isLoading, error] = useAuthState(auth);
   const [user, isLoading] = useAuthState(auth);
-  const [activeListId, setActiveListId] = useState<null | string>(null);
+  const [activeList, setActiveList] = useState<null | serverTypes.List>(null);
 
   return (
     <>
       {user ? (
         <>
-          <Nav activeListId={activeListId} setActiveListId={setActiveListId} user={user} />
+          <Nav activeList={activeList} setActiveList={setActiveList} user={user} />
           <section className="section">
-            <AddItem />
+            {/* <AddItem /> */}
             <ItemList items={items} />
           </section>
         </>

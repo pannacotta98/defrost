@@ -1,6 +1,6 @@
 import React from 'react';
-import { GroceryItem } from '../logic/GroceryItem';
-import { dayDiff } from '../logic/util';
+import { GroceryItem } from '../other/GroceryItem';
+import { dayDiff } from '../other/util';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationCircle, faTimes } from '@fortawesome/free-solid-svg-icons';
 
