@@ -48,43 +48,6 @@ const exampleItem4: GroceryItem = {
 const items = [exampleItem1, exampleItem2, exampleItem3, exampleItem4];
 //#endregion
 
-//#region Test stuff
-// interface UserData {
-//   // TODO
-//   test: string;
-// }
-
-// firestore.collection("cities").add(exampleItem1)
-// .then(function(docRef) {
-//   console.log("Document written with ID: ", docRef.id);
-// })
-// .catch(function(error) {
-//   console.error("Error adding document: ", error);
-// });
-
-// // Add a new document in collection "cities"
-// firestore.collection("cities").doc("LA").set({
-//   name: "Los Angeles",
-//   state: "CA",
-//   country: "USA"
-// })
-// .then(function() {
-//   console.log("Document successfully written!");
-// })
-// .catch(function(error) {
-//   alert(error);
-// });
-
-// const TestThing = () => {
-//   const contentRef = firestore.collection('user');
-//   const query = contentRef.limit(3);
-
-//   const [content] = useCollectionData(query);
-
-//   return <div>{content && content.map((c) => <p>{(c as UserData).test}</p>)}</div>;
-// };
-//#endregion
-
 function App() {
   // const [user, isLoading, error] = useAuthState(auth);
   const [user, isLoading] = useAuthState(auth);
@@ -103,7 +66,6 @@ function App() {
       ) : (
         <SignIn />
       )}
-      <SignOut />
       {/* <TestThing /> */}
       <div className={`pageloader ${isLoading && 'is-active'}`}>
         {/* <span className="title">Logging in</span> */}

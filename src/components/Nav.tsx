@@ -82,9 +82,9 @@ const Nav: React.FC<Props> = ({ activeList, setActiveList, user }) => {
     <>
       <nav className="navbar is-primary" role="navigation" aria-label="main navigation">
         <div className="navbar-brand">
-          <h1 className="has-text-weight-bold navbar-item">
+          <span className="is-size-3 has-text-weight-bold navbar-item">
             Freezer{activeList && ' — ' + activeList.name}
-          </h1>
+          </span>
           <NavBurger />
         </div>
 
