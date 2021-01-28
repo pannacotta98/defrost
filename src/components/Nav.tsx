@@ -16,7 +16,9 @@ const Nav: React.FC<Props> = ({ activeList, setActiveList, user }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const listListQuery = firestore.collection('itemLists').where('owner', '==', user.uid);
-  const [lists, listsLoading, listsError] = useCollectionData<serverTypes.List>(listListQuery);
+  const [lists, listsLoading, listsError] = useCollectionData<serverTypes.List>(listListQuery, {
+    idField: 'id',
+  });
 
   const ListsList = () => (
     <div className="navbar-item has-dropdown is-hoverable">

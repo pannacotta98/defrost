@@ -22,6 +22,7 @@ declare namespace serverTypes {
     name: string;
     owner: string;
     sharedWith: string[];
+    id: string;
     // There is also a subcollection of Item in firestore
   }
 }

@@ -1,8 +1,9 @@
 import React from 'react';
-import { GroceryItem, GroceryType } from '../other/GroceryItem';
+import { GroceryType } from '../other/GroceryItem';
 import { isValidDate } from '../other/util';
 import { Formik, Form, Field, ErrorMessage, FormikErrors } from 'formik';
-import { auth, firestore } from '../other/firebase';
+import { firebase, auth, firestore } from '../other/firebase';
+import serverTypes from '../other/serverTypes';
 
 interface FormValues {
   // TODO Fix
@@ -24,11 +25,14 @@ export default function AddItem() {
       }}
       onSubmit={(values, { setSubmitting }) => {
         if (auth.currentUser) {
-          const newItem: GroceryItem = {
+          const newItem: serverTypes.Item = {
             name: values.name,
-            expiresBy: values.expDate !== '' ? new Date(values.expDate) : null,
+            expiresBy:
+              values.expDate !== ''
+                ? firebase.firestore.Timestamp.fromDate(new Date(values.expDate))
+                : null,
             type: values.type,
-            added: new Date(),
+            added: firebase.firestore.Timestamp.now(),
             addedBy: auth.currentUser.uid,
           };
 

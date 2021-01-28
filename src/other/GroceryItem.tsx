@@ -6,12 +6,12 @@ export enum GroceryType {
   // TODO
 }
 
-export interface GroceryItem {
-  name: string;
-  expiresBy: Date | null;
-  added: Date;
-  type: GroceryType;
-  // location: ...
-  addedBy: string; // uid of who added the item
-  // note?: string; // Maybe idk
-}
+// export interface GroceryItem {
+//   name: string;
+//   expiresBy: Date | null;
+//   added: Date;
+//   type: GroceryType;
+//   // location: ...
+//   addedBy: string; // uid of who added the item
+//   // note?: string; // Maybe idk
+// }

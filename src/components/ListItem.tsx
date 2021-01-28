@@ -1,19 +1,20 @@
 import React from 'react';
-import { GroceryItem } from '../other/GroceryItem';
 import { dayDiff } from '../other/util';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationCircle, faTimes } from '@fortawesome/free-solid-svg-icons';
+import serverTypes from '../other/serverTypes';
+import { firebase } from '../other/firebase';
 
 // TODO The items are too wide
 
 // How many days before expiration date to have warning color
 const WARNING_THRES = 7;
 
-const ExpText: React.FC<{ expDate: Date | null }> = ({ expDate }) => {
+const ExpText: React.FC<{ expDate: firebase.firestore.Timestamp | null }> = ({ expDate }) => {
   if (expDate === null) {
     return <p>No expiration date</p>;
   } else {
-    const expiresInDays = dayDiff(new Date(), expDate);
+    const expiresInDays = dayDiff(new Date(), expDate.toDate());
 
     if (expiresInDays === 0) {
       return (
@@ -39,7 +40,7 @@ const ExpText: React.FC<{ expDate: Date | null }> = ({ expDate }) => {
 };
 
 interface Props {
-  item: GroceryItem;
+  item: serverTypes.Item;
 }
 
 const ListItem: React.FC<Props> = ({ item }) => {
