@@ -28,7 +28,10 @@ const Nav: React.FC<Props> = ({ activeList, setActiveList, user }) => {
           lists.length > 0 &&
           lists.map((list) => (
             <div
-              onClick={() => setActiveList(list)}
+              onClick={() => {
+                setActiveList(list);
+                setIsMenuOpen(false);
+              }}
               className={`navbar-item ${
                 !(activeList && activeList.name === list.name)
                   ? 'has-text-grey'

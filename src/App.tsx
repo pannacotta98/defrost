@@ -1,5 +1,5 @@
 import React from 'react';
-import './App.sass';
+import './App.scss';
 import Nav from './components/Nav';
 import ItemList from './components/ItemList';
 import SignIn from './components/SignIn';
