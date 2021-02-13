@@ -79,7 +79,7 @@ const ItemList: React.FC<Props> = ({ activeList }) => {
         </button>
       </div>
 
-      {isAddItemOpen && <AddItem />}
+      {isAddItemOpen && <AddItem list={activeList} setIsAddItemOpen={setIsAddItemOpen} />}
     </div>
   );
 };

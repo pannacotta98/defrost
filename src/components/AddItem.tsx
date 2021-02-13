@@ -11,7 +11,12 @@ interface FormValues {
   expDate: string;
 }
 
-export default function AddItem() {
+interface Props {
+  list: serverTypes.List;
+  setIsAddItemOpen: (isOpen: boolean) => void;
+}
+
+const AddItem: React.FC<Props> = ({ list, setIsAddItemOpen }) => {
   return (
     <Formik
       initialValues={{ name: '', expDate: '', type: GroceryType.UNSET }}
@@ -24,6 +29,7 @@ export default function AddItem() {
         return errors;
       }}
       onSubmit={(values, { setSubmitting }) => {
+        // setSubmitting(true);
         if (auth.currentUser) {
           const newItem: serverTypes.Item = {
             name: values.name,
@@ -39,11 +45,13 @@ export default function AddItem() {
           console.log(newItem);
 
           firestore
-            .collection('cities')
-            .doc('LA')
-            .set(newItem)
+            .collection('itemLists')
+            .doc(list.id)
+            .collection('items')
+            .add(newItem)
             .then(function () {
               console.log('Document successfully written!');
+              setIsAddItemOpen(false);
             })
             .catch(function (error) {
               console.log(error);
@@ -51,10 +59,6 @@ export default function AddItem() {
         } else {
           alert('Well, this should should not happen... Could not add the item :(');
         }
-        // setTimeout(() => {
-        //   alert(JSON.stringify(values, null, 2));
-        //   setSubmitting(false);
-        // }, 400);
       }}
     >
       {({ isSubmitting, values, errors }) => (
@@ -119,7 +123,9 @@ export default function AddItem() {
                 <div className="control">
                   <button
                     type="submit"
-                    className="button is-primary is-medium is-fullwidth"
+                    className={`button is-primary is-medium is-fullwidth ${
+                      isSubmitting && 'is-loading'
+                    }`}
                     disabled={isSubmitting}
                   >
                     Add item
@@ -130,7 +136,9 @@ export default function AddItem() {
                 <div className="control">
                   <button
                     type="button"
+                    onClick={() => setIsAddItemOpen(false)}
                     className="button is-primary is-light is-medium is-fullwidth"
+                    disabled={isSubmitting}
                   >
                     Cancel
                   </button>
@@ -142,4 +150,6 @@ export default function AddItem() {
       )}
     </Formik>
   );
-}
+};
+
+export default AddItem;

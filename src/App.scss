@@ -36,6 +36,10 @@ $link: $light-blue;
 
 @import '../node_modules/bulma-pageloader';
 
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
 .button.is-multiline {
   min-height: 2.25em;
   white-space: unset;

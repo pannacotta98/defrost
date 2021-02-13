@@ -28,6 +28,7 @@ const Nav: React.FC<Props> = ({ activeList, setActiveList, user }) => {
           lists.length > 0 &&
           lists.map((list) => (
             <div
+              key={list.id}
               onClick={() => {
                 setActiveList(list);
                 setIsMenuOpen(false);
