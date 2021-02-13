@@ -44,7 +44,12 @@ const Nav: React.FC<Props> = ({ activeList, setActiveList, user }) => {
         ) : listsLoading ? (
           <div className="navbar-item">Loading...</div>
         ) : (
-          listsError && <div className="navbar-item">{listsError}</div>
+          listsError && (
+            <div className="navbar-item">
+              <p className="has-text-weight-bold has-text-danger">An error occured</p>
+              <p className="has-text-danger">{listsError.message}</p>
+            </div>
+          )
         )}
         <hr className="navbar-divider" />
         <CreateList user={user} />
