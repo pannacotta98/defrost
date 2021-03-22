@@ -5,8 +5,6 @@ import { faExclamationCircle, faTimes } from '@fortawesome/free-solid-svg-icons'
 import serverTypes from '../other/serverTypes';
 import { firebase } from '../other/firebase';
 
-// TODO The items are too wide
-
 // How many days before expiration date to have warning color
 const WARNING_THRES = 7;
 
@@ -52,24 +50,13 @@ const ListItem: React.FC<Props> = ({ item }) => {
       </div>
       <div className="column is-narrow">
         <div className="field is-grouped">
-          <p className="control">
+          {/* <p className="control">
             <button className="button is-primary">&minus;</button>
-          </p>
+          </p> */}
           <p className="control">
             <button className="button is-primary">&times;</button>
           </p>
         </div>
-        {/* <div className="field has-addons">
-          <div className="control">
-            <a className="button is-primary">&minus;</a>
-          </div>
-          <div className="control">
-            <input className="input" type="text" placeholder="?" />
-          </div>
-          <div className="control">
-            <a className="button is-primary">+</a>
-          </div>
-        </div> */}
       </div>
     </label>
   );

@@ -5,6 +5,7 @@ import CreateList from './CreateList';
 import SignOut from './SignOut';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 import serverTypes from '../other/serverTypes';
+import { AnimatePresence, motion } from 'framer-motion';
 
 interface Props {
   activeList: null | serverTypes.List;
@@ -99,16 +100,33 @@ const Nav: React.FC<Props> = ({ activeList, setActiveList, user }) => {
           <NavBurger />
         </div>
 
-        <div className={`navbar-menu ${isMenuOpen ? 'is-active' : ''}`}>
-          <div className="navbar-start">
-            <ListsList />
-          </div>
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div
+              initial={{ height: 0 }}
+              animate={{ height: 'auto' }}
+              exit={{ height: 0 }}
+              transition={{ duration: 0.2 }}
+              className="navbar-menu is-active"
+            >
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <div className="navbar-start">
+                  <ListsList />
+                </div>
 
-          <hr className="" />
-          <div className="navbar-end">
-            <AccountInfo />
-          </div>
-        </div>
+                <hr className="" />
+                <div className="navbar-end">
+                  <AccountInfo />
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </nav>
     </>
   );
