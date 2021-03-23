@@ -15,6 +15,7 @@ declare namespace serverTypes {
     added: firebase.firestore.Timestamp;
     type: GroceryType;
     addedBy: string;
+    id?: string;
     // TODO Ev var frysen
   }
 

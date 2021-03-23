@@ -2,25 +2,39 @@ import React from 'react';
 import { GroceryType } from '../other/GroceryItem';
 import { isValidDate } from '../other/util';
 import { Formik, Form, Field, ErrorMessage, FormikErrors } from 'formik';
-import { firebase, auth, firestore } from '../other/firebase';
+import { firebase, firestore } from '../other/firebase';
 import serverTypes from '../other/serverTypes';
 import { motion } from 'framer-motion';
+import { dateToYMD } from './../other/util';
 
 interface FormValues {
   // TODO Fix
   name: string;
   expDate: string;
+  type: GroceryType;
 }
 
 interface Props {
+  user: serverTypes.User;
   list: serverTypes.List;
-  setIsAddItemOpen: (isOpen: boolean) => void;
+  selectedItem: serverTypes.Item | null; // null if creating new item
+  closeModal: () => void;
 }
 
-const AddItem: React.FC<Props> = ({ list, setIsAddItemOpen }) => {
+/** A modal for creating or modifying items */
+const SetItem: React.FC<Props> = ({ list, closeModal, selectedItem, user }) => {
   return (
     <Formik
-      initialValues={{ name: '', expDate: '', type: GroceryType.UNSET }}
+      initialValues={
+        selectedItem === null
+          ? { name: '', expDate: '', type: GroceryType.UNSET }
+          : {
+              name: selectedItem.name,
+              expDate:
+                selectedItem.expiresBy === null ? '' : dateToYMD(selectedItem.expiresBy.toDate()),
+              type: selectedItem.type,
+            }
+      }
       validate={(values: FormValues) => {
         let errors: FormikErrors<FormValues> = {};
 
@@ -31,34 +45,49 @@ const AddItem: React.FC<Props> = ({ list, setIsAddItemOpen }) => {
       }}
       onSubmit={(values, { setSubmitting }) => {
         // setSubmitting(true);
-        if (auth.currentUser) {
-          const newItem: serverTypes.Item = {
-            name: values.name,
-            expiresBy:
-              values.expDate !== ''
-                ? firebase.firestore.Timestamp.fromDate(new Date(values.expDate))
-                : null,
-            type: values.type,
-            added: firebase.firestore.Timestamp.now(),
-            addedBy: auth.currentUser.uid,
-          };
+        const newItem: serverTypes.Item = {
+          name: values.name,
+          expiresBy:
+            values.expDate !== ''
+              ? firebase.firestore.Timestamp.fromDate(new Date(values.expDate))
+              : null,
+          type: values.type,
+          added: firebase.firestore.Timestamp.now(),
+          addedBy: user.uid,
+        };
 
-          console.log(newItem);
+        const itemCollection = firestore.collection('itemLists').doc(list.id).collection('items');
 
-          firestore
-            .collection('itemLists')
-            .doc(list.id)
-            .collection('items')
+        if (selectedItem === null) {
+          // Add new item
+          itemCollection
             .add(newItem)
             .then(function () {
               console.log('Document successfully written!');
-              setIsAddItemOpen(false);
+              closeModal();
             })
             .catch(function (error) {
               console.log(error);
+              alert(error);
             });
         } else {
-          alert('Well, this should should not happen... Could not add the item :(');
+          if (selectedItem.id) {
+            // Update existing item
+            itemCollection
+              .doc(selectedItem.id)
+              .set(newItem)
+              .then(function () {
+                console.log('Document successfully written!');
+                closeModal();
+              })
+              .catch(function (error) {
+                console.log(error);
+                alert(error);
+              });
+          } else {
+            alert('An error occured when trying to update item :((');
+            closeModal();
+          }
         }
       }}
     >
@@ -77,7 +106,7 @@ const AddItem: React.FC<Props> = ({ list, setIsAddItemOpen }) => {
             className="modal-content"
           >
             <Form className="box">
-              <h1 className="title">New item</h1>
+              <h1 className="title">{selectedItem === null ? 'New item' : 'Update item'}</h1>
               <div className="field">
                 <label className="label">Item</label>
                 <div className="control">
@@ -134,12 +163,10 @@ const AddItem: React.FC<Props> = ({ list, setIsAddItemOpen }) => {
                 <div className="control">
                   <button
                     type="submit"
-                    className={`button is-primary is-medium is-fullwidth ${
-                      isSubmitting && 'is-loading'
-                    }`}
+                    className={`button is-primary is-fullwidth ${isSubmitting && 'is-loading'}`}
                     disabled={isSubmitting}
                   >
-                    Add item
+                    {selectedItem === null ? 'Add item' : 'Update'}
                   </button>
                 </div>
               </div>
@@ -147,8 +174,8 @@ const AddItem: React.FC<Props> = ({ list, setIsAddItemOpen }) => {
                 <div className="control">
                   <button
                     type="button"
-                    onClick={() => setIsAddItemOpen(false)}
-                    className="button is-primary is-light is-medium is-fullwidth"
+                    onClick={() => closeModal()}
+                    className="button is-primary is-light is-fullwidth"
                     disabled={isSubmitting}
                   >
                     Cancel
@@ -163,4 +190,4 @@ const AddItem: React.FC<Props> = ({ list, setIsAddItemOpen }) => {
   );
 };
 
-export default AddItem;
+export default SetItem;

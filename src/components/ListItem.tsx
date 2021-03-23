@@ -39,11 +39,12 @@ const ExpText: React.FC<{ expDate: firebase.firestore.Timestamp | null }> = ({ e
 
 interface Props {
   item: serverTypes.Item;
+  onPress: (item: serverTypes.Item) => void;
 }
 
-const ListItem: React.FC<Props> = ({ item }) => {
+const ListItem: React.FC<Props> = ({ item, onPress }) => {
   return (
-    <label className="panel-block columns is-mobile">
+    <label className="panel-block columns is-mobile" onClick={() => onPress(item)}>
       <div className="column">
         <h2 className="is-size-5">{item.name}</h2>
         <ExpText expDate={item.expiresBy} />

@@ -5,20 +5,21 @@ import serverTypes from '../other/serverTypes';
 import ListItem from './ListItem';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { firestore } from '../other/firebase';
-import AddItem from './AddItem';
+import SetItem from './SetItem';
 
 type FilterFunction = (item: serverTypes.Item) => boolean;
 
 interface Props {
   activeList: serverTypes.List;
+  user: serverTypes.User;
 }
 
-const ItemList: React.FC<Props> = ({ activeList }) => {
-  // UI state
-  const [isAddItemOpen, setIsAddItemOpen] = useState(false);
+const ItemList: React.FC<Props> = ({ activeList, user }) => {
+  // The item currently open in modal, 'closed' if none, or 'new' if adding item
+  const [itemModal, setItemModal] = useState<serverTypes.Item | 'new' | 'closed'>('closed');
 
   const listQuery = firestore.collection('itemLists').doc(activeList.id).collection('items');
-  let [items, isLoading, error] = useCollectionData<serverTypes.Item>(listQuery);
+  let [items, isLoading, error] = useCollectionData<serverTypes.Item>(listQuery, { idField: 'id' });
   if (!items) items = [];
 
   // const filterCondition = (item: GroceryItem) => item.type.includes(GroceryType.Bread);
@@ -50,7 +51,7 @@ const ItemList: React.FC<Props> = ({ activeList }) => {
             <h2 className="subtitle has-text-centered pt-6">No item matches the current filter</h2>
           ) : (
             filteredAndSortedItems.map((item, idx) => (
-              <ListItem item={item} key={idx} /> // TODO Use id instead of index probably
+              <ListItem item={item} key={idx} onPress={setItemModal} /> // TODO Use id instead of index probably
             ))
           ))}
       </div>
@@ -59,19 +60,12 @@ const ItemList: React.FC<Props> = ({ activeList }) => {
           <FontAwesomeIcon icon={faFilter} />
           <p>Filter</p>
         </button>
-        {/* <div className="navbar-dropdown">
-          <a className="navbar-item">Overview</a>
-          <a className="navbar-item">Elements</a>
-          <a className="navbar-item">Components</a>
-          <hr className="navbar-divider" />
-          <div className="navbar-item">Version 0.9.1</div>
-        </div> */}
         <button className="button is-multiline is-primary navbar-item column">
           <FontAwesomeIcon icon={faSortAmountUpAlt} />
           <p>Sort</p>
         </button>
         <button
-          onClick={() => setIsAddItemOpen(true)}
+          onClick={() => setItemModal('new')}
           className="button is-multiline is-primary navbar-item column"
         >
           <FontAwesomeIcon icon={faPlus} />
@@ -79,7 +73,14 @@ const ItemList: React.FC<Props> = ({ activeList }) => {
         </button>
       </div>
 
-      {isAddItemOpen && <AddItem list={activeList} setIsAddItemOpen={setIsAddItemOpen} />}
+      {itemModal !== 'closed' && (
+        <SetItem
+          list={activeList}
+          closeModal={() => setItemModal('closed')}
+          selectedItem={itemModal === 'new' ? null : itemModal}
+          user={user}
+        />
+      )}
     </div>
   );
 };

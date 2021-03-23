@@ -20,7 +20,7 @@ function App() {
           <Nav activeList={activeList} setActiveList={setActiveList} user={user} />
           <section className="section">
             {/* <AddItem /> */}
-            {activeList && <ItemList activeList={activeList} />}
+            {activeList && <ItemList user={user} activeList={activeList} />}
             {/* <ItemList items={[]} /> */}
           </section>
         </>

@@ -41,3 +41,11 @@ export function isValidDate(dateString: string) {
   // Check the range of the day
   return day > 0 && day <= monthLength[month - 1];
 }
+
+export function dateToYMD(date: Date) {
+  // https://stackoverflow.com/questions/3552461/how-to-format-a-javascript-date
+  var d = date.getDate();
+  var m = date.getMonth() + 1; //Month from 0 to 11
+  var y = date.getFullYear();
+  return '' + y + '-' + (m <= 9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
+}
