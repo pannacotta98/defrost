@@ -4,7 +4,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationCircle, faTimes } from '@fortawesome/free-solid-svg-icons';
 import serverTypes from '../other/serverTypes';
 import { firebase, firestore } from '../other/firebase';
-import { icon } from '@fortawesome/fontawesome-svg-core';
 
 // How many days before expiration date to have warning color
 const WARNING_THRES = 7;
@@ -46,7 +45,7 @@ interface Props {
 
 const ListItem: React.FC<Props> = ({ item, onPress, list }) => {
   return (
-    <label className="panel-block columns is-mobile" onClick={() => onPress(item)}>
+    <div className="panel-block columns is-mobile" onClick={() => onPress(item)}>
       <div className="column">
         <h2 className="is-size-5">{item.name}</h2>
         <ExpText expDate={item.expiresBy} />
@@ -75,7 +74,7 @@ const ListItem: React.FC<Props> = ({ item, onPress, list }) => {
           </p>
         </div>
       </div>
-    </label>
+    </div>
   );
 };
 
