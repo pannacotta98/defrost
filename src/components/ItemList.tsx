@@ -51,7 +51,7 @@ const ItemList: React.FC<Props> = ({ activeList, user }) => {
             <h2 className="subtitle has-text-centered pt-6">No item matches the current filter</h2>
           ) : (
             filteredAndSortedItems.map((item, idx) => (
-              <ListItem item={item} key={idx} onPress={setItemModal} /> // TODO Use id instead of index probably
+              <ListItem list={activeList} item={item} key={idx} onPress={setItemModal} /> // TODO Use id instead of index probably
             ))
           ))}
       </div>

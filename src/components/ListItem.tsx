@@ -3,7 +3,8 @@ import { dayDiff } from '../other/util';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationCircle, faTimes } from '@fortawesome/free-solid-svg-icons';
 import serverTypes from '../other/serverTypes';
-import { firebase } from '../other/firebase';
+import { firebase, firestore } from '../other/firebase';
+import { icon } from '@fortawesome/fontawesome-svg-core';
 
 // How many days before expiration date to have warning color
 const WARNING_THRES = 7;
@@ -38,11 +39,12 @@ const ExpText: React.FC<{ expDate: firebase.firestore.Timestamp | null }> = ({ e
 };
 
 interface Props {
+  list: serverTypes.List;
   item: serverTypes.Item;
   onPress: (item: serverTypes.Item) => void;
 }
 
-const ListItem: React.FC<Props> = ({ item, onPress }) => {
+const ListItem: React.FC<Props> = ({ item, onPress, list }) => {
   return (
     <label className="panel-block columns is-mobile" onClick={() => onPress(item)}>
       <div className="column">
@@ -55,7 +57,21 @@ const ListItem: React.FC<Props> = ({ item, onPress }) => {
             <button className="button is-primary">&minus;</button>
           </p> */}
           <p className="control">
-            <button className="button is-primary">&times;</button>
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation();
+                firestore
+                  .collection('itemLists')
+                  .doc(list.id)
+                  .collection('items')
+                  .doc(item.id)
+                  .delete();
+              }}
+              className="button is-primary"
+            >
+              &times;
+            </button>
           </p>
         </div>
       </div>
