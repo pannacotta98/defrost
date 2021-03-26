@@ -6,6 +6,7 @@ import SignOut from './SignOut';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 import serverTypes from '../other/serverTypes';
 import { AnimatePresence, motion } from 'framer-motion';
+import './Nav.scss';
 
 interface Props {
   activeList: null | serverTypes.List;
@@ -76,17 +77,15 @@ const Nav: React.FC<Props> = ({ activeList, setActiveList, user }) => {
 
   const AccountInfo = () => (
     <div className="navbar-item">
-      <div className="navbar-link">
+      <span className="account-info">
         {user.photoURL && (
-          <figure className="image">
+          <figure className="image is-32x32">
             <img className="is-rounded" src={user.photoURL} alt="Logged in user" />
           </figure>
         )}
-        {user.displayName}
-      </div>
-      <div className="buttons">
+        <span>{user.displayName}</span>
         <SignOut />
-      </div>
+      </span>
     </div>
   );
 

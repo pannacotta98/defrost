@@ -5,7 +5,7 @@ import { auth } from '../other/firebase';
 const SignOut = () => {
   return (
     auth.currentUser && (
-      <button className="button is-danger is-light" onClick={() => auth.signOut()}>
+      <button className="button is-danger is-light is-small" onClick={() => auth.signOut()}>
         <FontAwesomeIcon icon={faSignOutAlt} />
         &nbsp;&nbsp;Sign out
       </button>
