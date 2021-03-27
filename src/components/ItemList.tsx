@@ -28,8 +28,8 @@ const ItemList: React.FC<Props> = ({ activeList, user }) => {
   const sortCondition = (item1: serverTypes.Item, item2: serverTypes.Item) => {
     if (item1.expiresBy && item2.expiresBy)
       return item1.expiresBy.toMillis() - item2.expiresBy.toMillis();
-    else if (item1.expiresBy && !item2.expiresBy) return 1;
-    else if (!item1.expiresBy && item2.expiresBy) return -1;
+    else if (item1.expiresBy && !item2.expiresBy) return -1;
+    else if (!item1.expiresBy && item2.expiresBy) return 1;
     return 0;
   };
 
