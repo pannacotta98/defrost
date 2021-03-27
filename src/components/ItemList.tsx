@@ -6,8 +6,7 @@ import ListItem from './ListItem';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { firestore } from '../other/firebase';
 import SetItem from './SetItem';
-
-type FilterFunction = (item: serverTypes.Item) => boolean;
+import { sortingFunctions } from '../other/sortingFunctions';
 
 interface Props {
   activeList: serverTypes.List;
@@ -22,16 +21,8 @@ const ItemList: React.FC<Props> = ({ activeList, user }) => {
   let [items, isLoading, error] = useCollectionData<serverTypes.Item>(listQuery, { idField: 'id' });
   if (!items) items = [];
 
-  // const filterCondition = (item: GroceryItem) => item.type.includes(GroceryType.Bread);
-
   const filterCondition = () => true;
-  const sortCondition = (item1: serverTypes.Item, item2: serverTypes.Item) => {
-    if (item1.expiresBy && item2.expiresBy)
-      return item1.expiresBy.toMillis() - item2.expiresBy.toMillis();
-    else if (item1.expiresBy && !item2.expiresBy) return -1;
-    else if (!item1.expiresBy && item2.expiresBy) return 1;
-    return 0;
-  };
+  const sortCondition = sortingFunctions.get('oldest first');
 
   const filteredAndSortedItems = items.filter(filterCondition).sort(sortCondition);
 
@@ -57,14 +48,14 @@ const ItemList: React.FC<Props> = ({ activeList, user }) => {
           ))}
       </div>
       <div className="navbar is-fixed-bottom is-primary columns is-mobile has-dropdown has-dropdown-up mb-0">
-        <button className="button is-multiline is-primary navbar-item column">
+        {/* <button className="button is-multiline is-primary navbar-item column">
           <FontAwesomeIcon icon={faFilter} />
           <p>Filter</p>
-        </button>
-        <button className="button is-multiline is-primary navbar-item column">
+        </button> */}
+        {/* <button className="button is-multiline is-primary navbar-item column">
           <FontAwesomeIcon icon={faSortAmountUpAlt} />
           <p>Sort</p>
-        </button>
+        </button> */}
         <button
           onClick={() => setItemModal('new')}
           className="button is-multiline is-primary navbar-item column"
