@@ -37,7 +37,8 @@ const ItemList: React.FC<Props> = ({ activeList, user }) => {
 
   return (
     <div className="has-navbar-fixed-bottom">
-      <div className={`columns`}>
+      {/* TODO The layout here is very hacky */}
+      <div className="columns mb-6" style={{ marginTop: '-3rem' }}>
         {isLoading && (
           <div className="loader-wrapper is-active">
             <div className="loader is-loading"></div>
