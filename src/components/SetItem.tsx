@@ -63,12 +63,12 @@ const SetItem: React.FC<Props> = ({ list, closeModal, selectedItem, user }) => {
           itemCollection
             .add(newItem)
             .then(function () {
-              console.log('Document successfully written!');
               closeModal();
             })
             .catch(function (error) {
-              console.log(error);
-              alert(error);
+              console.error('Could not add item', error);
+              alert('Could not add item — ' + error.message);
+              closeModal();
             });
         } else {
           if (selectedItem.id) {
@@ -77,14 +77,15 @@ const SetItem: React.FC<Props> = ({ list, closeModal, selectedItem, user }) => {
               .doc(selectedItem.id)
               .set(newItem)
               .then(function () {
-                console.log('Document successfully written!');
                 closeModal();
               })
               .catch(function (error) {
-                console.log(error);
-                alert(error);
+                console.error('Could not update item', error);
+                alert('Could not update item — ' + error.message);
+                closeModal();
               });
           } else {
+            console.error('Could not update item — id prop missing');
             alert('An error occured when trying to update item :((');
             closeModal();
           }

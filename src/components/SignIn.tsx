@@ -1,6 +1,5 @@
 import React from 'react';
 import { firebase, auth, firestore } from '../other/firebase';
-// Icons
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 
@@ -14,27 +13,25 @@ const SignIn = () => {
         if (result.user) {
           const uid = result.user.uid;
           const userDataRef = firestore.collection('users').doc(uid);
-          userDataRef.set(
-            {
-              // TODO Apparently these can be null!? But when/how?
-              email: result.user.email,
-              name: result.user.displayName,
-              photoUrl: result.user.photoURL,
-              uid: uid,
-            },
-            { merge: true }
-          );
+          userDataRef
+            .set(
+              {
+                // TODO Apparently these can be null!? But when/how?
+                email: result.user.email,
+                name: result.user.displayName,
+                photoUrl: result.user.photoURL,
+                uid: uid,
+              },
+              { merge: true }
+            )
+            .catch((error) => {
+              alert('An error occured when setting user — ' + error.message);
+              auth.signOut();
+            });
         }
       })
       .catch((error) => {
-        // // Handle Errors here.
-        // var errorCode = error.code;
-        var errorMessage = error.message;
-        // // The email of the user's account used.
-        // var email = error.email;
-        // // The firebase.auth.AuthCredential type that was used.
-        // var credential = error.credential;
-        alert(errorMessage);
+        alert('An error occured during sign in — ' + error.message);
       });
   };
 

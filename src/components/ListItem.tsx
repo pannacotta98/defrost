@@ -65,7 +65,8 @@ const ListItem: React.FC<Props> = ({ item, onPress, list }) => {
                   .doc(list.id)
                   .collection('items')
                   .doc(item.id)
-                  .delete();
+                  .delete()
+                  .catch((error) => alert(`Could not delete item — ${error.message}`));
               }}
               className="button is-primary"
             >

@@ -30,22 +30,24 @@ const ItemList: React.FC<Props> = ({ activeList, user }) => {
     <div className="has-navbar-fixed-bottom">
       {/* TODO The layout here is very hacky */}
       <div className="columns mb-6" style={{ marginTop: '-3rem' }}>
-        {isLoading && (
+        {isLoading ? (
           <div className="loader-wrapper is-active">
             <div className="loader is-loading"></div>
           </div>
+        ) : error ? (
+          <div>
+            <h2 className="subtitle has-text-centered pt-6 has-text-danger">An error occured</h2>
+            <p className="has-text-centered has-text-danger">{error.message}</p>
+          </div>
+        ) : items.length < 1 ? (
+          <h2 className="subtitle has-text-centered pt-6">The list is empty</h2>
+        ) : filteredAndSortedItems.length < 1 ? (
+          <h2 className="subtitle has-text-centered pt-6">No item matches the current filter</h2>
+        ) : (
+          filteredAndSortedItems.map((item, idx) => (
+            <ListItem list={activeList} item={item} key={idx} onPress={setItemModal} /> // TODO Use id instead of index probably
+          ))
         )}
-
-        {!isLoading &&
-          (items.length < 1 ? (
-            <h2 className="subtitle has-text-centered pt-6">The list is empty</h2>
-          ) : filteredAndSortedItems.length < 1 ? (
-            <h2 className="subtitle has-text-centered pt-6">No item matches the current filter</h2>
-          ) : (
-            filteredAndSortedItems.map((item, idx) => (
-              <ListItem list={activeList} item={item} key={idx} onPress={setItemModal} /> // TODO Use id instead of index probably
-            ))
-          ))}
       </div>
       <div className="navbar is-fixed-bottom is-primary columns is-mobile has-dropdown has-dropdown-up mb-0">
         {/* <button className="button is-multiline is-primary navbar-item column">

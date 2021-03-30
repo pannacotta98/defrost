@@ -19,15 +19,12 @@ function App() {
         <>
           <Nav activeList={activeList} setActiveList={setActiveList} user={user} />
           <section className="section">
-            {/* <AddItem /> */}
             {activeList && <ItemList user={user} activeList={activeList} />}
-            {/* <ItemList items={[]} /> */}
           </section>
         </>
       ) : (
         <SignIn />
       )}
-      {/* <TestThing /> */}
       <div className={`pageloader ${isLoading && 'is-active'}`}>
         {/* <span className="title">Logging in</span> */}
       </div>
