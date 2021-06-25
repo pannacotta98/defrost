@@ -26,6 +26,7 @@ const SignIn = () => {
             )
             .catch((error) => {
               alert('An error occured when setting user — ' + error.message);
+              console.error(error);
               auth.signOut();
             });
         }

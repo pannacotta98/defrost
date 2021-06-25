@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationCircle, faTimes } from '@fortawesome/free-solid-svg-icons';
 import serverTypes from '../other/serverTypes';
 import { firebase, firestore } from '../other/firebase';
+import _ from 'lodash';
 
 // How many days before expiration date to have warning color
 const WARNING_THRES = 7;
@@ -66,6 +67,17 @@ const ListItem: React.FC<Props> = ({ item, onPress, list }) => {
                   .collection('items')
                   .doc(item.id)
                   .delete()
+                  .then(() => {
+                    console.log('Removed item', item);
+                    // TODO Code below to use for undo functionality
+                    // const idStrippedItem = _.cloneDeep(item);
+                    // delete idStrippedItem.id;
+                    // firestore
+                    //   .collection('itemLists')
+                    //   .doc(list.id)
+                    //   .collection('items')
+                    //   .add(idStrippedItem);
+                  })
                   .catch((error) => alert(`Could not delete item — ${error.message}`));
               }}
               className="button is-primary"

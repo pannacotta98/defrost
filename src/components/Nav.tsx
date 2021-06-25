@@ -42,6 +42,7 @@ const Nav: React.FC<Props> = ({ activeList, setActiveList, user }) => {
               }`}
             >
               {list.name}
+              {/* {list.sharedWith} */}
             </div>
           ))
         ) : listsLoading ? (
@@ -94,7 +95,7 @@ const Nav: React.FC<Props> = ({ activeList, setActiveList, user }) => {
       <nav className="navbar is-primary" role="navigation" aria-label="main navigation">
         <div className="navbar-brand">
           <span className="is-size-4 has-text-weight-bold navbar-item">
-            Freezer{activeList && ' — ' + activeList.name}
+            Defrost{activeList && ' — ' + activeList.name}
           </span>
           <NavBurger />
         </div>
