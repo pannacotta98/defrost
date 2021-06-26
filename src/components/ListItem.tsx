@@ -61,6 +61,9 @@ const ListItem: React.FC<Props> = ({ item, onPress, list }) => {
               type="button"
               onClick={(event) => {
                 event.stopPropagation();
+                if (!window.confirm(`Are you sure you want to remove “${item.name}”?`)) {
+                  return;
+                }
                 firestore
                   .collection('itemLists')
                   .doc(list.id)
@@ -69,7 +72,7 @@ const ListItem: React.FC<Props> = ({ item, onPress, list }) => {
                   .delete()
                   .then(() => {
                     console.log('Removed item', item);
-                    // TODO Code below to use for undo functionality
+                    // TODO Code below to use for undo functionality maybe
                     // const idStrippedItem = _.cloneDeep(item);
                     // delete idStrippedItem.id;
                     // firestore
