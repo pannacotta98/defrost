@@ -15,7 +15,7 @@ interface Props {
 }
 
 const Nav: React.FC<Props> = ({ activeList, setActiveList, user }) => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(activeList === null);
 
   const listListQuery = firestore.collection('itemLists').where('owner', '==', user.uid);
   const [lists, listsLoading, listsError] = useCollectionData<serverTypes.List>(listListQuery, {
