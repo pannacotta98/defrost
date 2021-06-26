@@ -112,6 +112,7 @@ const SetItem: React.FC<Props> = ({ list, closeModal, selectedItem, user }) => {
                 <label className="label">Item</label>
                 <div className="control">
                   <Field
+                    autoFocus
                     className={`input ${errors.name && 'is-danger'}`}
                     type="text"
                     name="name"
