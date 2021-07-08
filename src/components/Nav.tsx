@@ -2,7 +2,7 @@ import React from 'react';
 import { useState } from 'react';
 import { firebase, firestore } from '../other/firebase';
 import CreateList from './CreateList';
-import SignOut from './SignOut';
+import { AccountInfo } from './AccountInfo';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 import serverTypes from '../other/serverTypes';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -76,20 +76,6 @@ const Nav: React.FC<Props> = ({ activeList, setActiveList, user }) => {
     </div>
   );
 
-  const AccountInfo = () => (
-    <div className="navbar-item">
-      <span className="account-info">
-        {user.photoURL && (
-          <figure className="image is-32x32">
-            <img className="is-rounded" src={user.photoURL} alt="Logged in user" />
-          </figure>
-        )}
-        <span>{user.displayName}</span>
-        <SignOut />
-      </span>
-    </div>
-  );
-
   return (
     <>
       <nav className="navbar is-primary" role="navigation" aria-label="main navigation">
@@ -121,7 +107,7 @@ const Nav: React.FC<Props> = ({ activeList, setActiveList, user }) => {
 
                 <hr className="" />
                 <div className="navbar-end">
-                  <AccountInfo />
+                  <AccountInfo user={user} />
                 </div>
               </motion.div>
             </motion.div>
