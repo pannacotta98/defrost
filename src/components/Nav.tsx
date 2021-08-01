@@ -7,15 +7,15 @@ import { useCollectionData } from 'react-firebase-hooks/firestore';
 import serverTypes from '../other/serverTypes';
 import { AnimatePresence, motion } from 'framer-motion';
 import './Nav.scss';
+import { Link } from 'react-router-dom';
 
 interface Props {
-  activeList: null | serverTypes.List;
-  setActiveList: (listId: serverTypes.List) => void;
+  activeListId: null | string;
   user: firebase.User;
 }
 
-const Nav: React.FC<Props> = ({ activeList, setActiveList, user }) => {
-  const [isMenuOpen, setIsMenuOpen] = useState(activeList === null);
+const Nav: React.FC<Props> = ({ activeListId, user }) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(activeListId === null);
 
   const listListQuery = firestore.collection('itemLists').where('owner', '==', user.uid);
   const [lists, listsLoading, listsError] = useCollectionData<serverTypes.List>(listListQuery, {
@@ -32,17 +32,15 @@ const Nav: React.FC<Props> = ({ activeList, setActiveList, user }) => {
             <div
               key={list.id}
               onClick={() => {
-                setActiveList(list);
                 setIsMenuOpen(false);
               }}
               className={`navbar-item ${
-                !(activeList && activeList.name === list.name)
+                !(activeListId && activeListId === list.id)
                   ? 'has-text-grey'
                   : 'has-background-primary-light'
               }`}
             >
-              {list.name}
-              {/* {list.sharedWith} */}
+              <Link to={`/list/${list.id}`}>{list.name}</Link>
             </div>
           ))
         ) : listsLoading ? (
@@ -81,7 +79,7 @@ const Nav: React.FC<Props> = ({ activeList, setActiveList, user }) => {
       <nav className="navbar is-primary" role="navigation" aria-label="main navigation">
         <div className="navbar-brand">
           <span className="is-size-4 has-text-weight-bold navbar-item">
-            Defrost{activeList && ' — ' + activeList.name}
+            Defrost{activeListId && ' — TODO'}
           </span>
           <NavBurger />
         </div>

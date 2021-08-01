@@ -1,4 +1,3 @@
-import serverTypes from '../other/serverTypes';
 import { firebase } from '../other/firebase';
 import SignOut from './SignOut';
 

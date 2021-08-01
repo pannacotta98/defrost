@@ -15,14 +15,14 @@ interface FormValues {
 }
 
 interface Props {
-  user: serverTypes.User;
-  list: serverTypes.List;
+  user: firebase.User;
+  listId: string;
   selectedItem: serverTypes.Item | null; // null if creating new item
   closeModal: () => void;
 }
 
 /** A modal for creating or modifying items */
-const SetItem: React.FC<Props> = ({ list, closeModal, selectedItem, user }) => {
+const SetItem: React.FC<Props> = ({ listId, closeModal, selectedItem, user }) => {
   return (
     <Formik
       initialValues={
@@ -56,7 +56,7 @@ const SetItem: React.FC<Props> = ({ list, closeModal, selectedItem, user }) => {
           addedBy: user.uid,
         };
 
-        const itemCollection = firestore.collection('itemLists').doc(list.id).collection('items');
+        const itemCollection = firestore.collection('itemLists').doc(listId).collection('items');
 
         if (selectedItem === null) {
           // Add new item

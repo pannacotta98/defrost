@@ -1,34 +1,34 @@
 import React from 'react';
 import './App.scss';
-import Nav from './components/Nav';
-import ItemList from './components/ItemList';
 import SignIn from './components/SignIn';
-import { auth } from './other/firebase';
+import { auth, firebase } from './other/firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { useState } from 'react';
-import serverTypes from './other/serverTypes';
+import { BrowserRouter, Switch, Route } from 'react-router-dom';
+import { ListScreen } from './components/ListScreen';
+import Nav from './components/Nav';
 
 function App() {
   // const [user, isLoading, error] = useAuthState(auth);
-  const [user, isLoading] = useAuthState(auth);
-  const [activeList, setActiveList] = useState<null | serverTypes.List>(null);
+  const [user_, isLoading] = useAuthState(auth); // TODO Errors
+  const user = user_ as firebase.User; // FIXME Why won't the types work for the hooks?
 
   return (
-    <>
+    <BrowserRouter>
       {user ? (
-        <>
-          <Nav activeList={activeList} setActiveList={setActiveList} user={user} />
-          <section className="section">
-            {activeList && <ItemList user={user} activeList={activeList} />}
-          </section>
-        </>
+        <Switch>
+          <Route path="/" exact>
+            <Nav activeListId={null} user={user} />
+          </Route>
+          <Route path="/list/:listId">
+            <ListScreen user={user} />
+          </Route>
+        </Switch>
+      ) : isLoading ? (
+        <div className="pageloader is-active"></div>
       ) : (
         <SignIn />
       )}
-      <div className={`pageloader ${isLoading && 'is-active'}`}>
-        {/* <span className="title">Logging in</span> */}
-      </div>
-    </>
+    </BrowserRouter>
   );
 }
 

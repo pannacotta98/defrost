@@ -1,23 +1,23 @@
-import { faFilter, faPlus, faSortAmountUpAlt } from '@fortawesome/free-solid-svg-icons';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState } from 'react';
 import serverTypes from '../other/serverTypes';
 import ListItem from './ListItem';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
-import { firestore } from '../other/firebase';
+import { firebase, firestore } from '../other/firebase';
 import SetItem from './SetItem';
 import { sortingFunctions } from '../other/sortingFunctions';
 
 interface Props {
-  activeList: serverTypes.List;
-  user: serverTypes.User;
+  activeListId: string;
+  user: firebase.User;
 }
 
-const ItemList: React.FC<Props> = ({ activeList, user }) => {
+const ItemList: React.FC<Props> = ({ activeListId, user }) => {
   // The item currently open in modal, 'closed' if none, or 'new' if adding item
   const [itemModal, setItemModal] = useState<serverTypes.Item | 'new' | 'closed'>('closed');
-
-  const listQuery = firestore.collection('itemLists').doc(activeList.id).collection('items');
+  // TODO SE TILL ATT KOLLA OM MAN HAR TILLGÅNG INNAN EN REQUEST SKICKAS
+  const listQuery = firestore.collection('itemLists').doc(activeListId).collection('items');
   let [items, isLoading, error] = useCollectionData<serverTypes.Item>(listQuery, { idField: 'id' });
   if (!items) items = [];
 
@@ -45,7 +45,7 @@ const ItemList: React.FC<Props> = ({ activeList, user }) => {
           <h2 className="subtitle has-text-centered pt-6">No item matches the current filter</h2>
         ) : (
           filteredAndSortedItems.map((item, idx) => (
-            <ListItem list={activeList} item={item} key={idx} onPress={setItemModal} /> // TODO Use id instead of index probably
+            <ListItem listId={activeListId} item={item} key={idx} onPress={setItemModal} /> // TODO Use id instead of index probably
           ))
         )}
       </div>
@@ -69,7 +69,7 @@ const ItemList: React.FC<Props> = ({ activeList, user }) => {
 
       {itemModal !== 'closed' && (
         <SetItem
-          list={activeList}
+          listId={activeListId}
           closeModal={() => setItemModal('closed')}
           selectedItem={itemModal === 'new' ? null : itemModal}
           user={user}
