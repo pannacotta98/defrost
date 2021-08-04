@@ -1,16 +1,12 @@
-import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { IconButton } from '@material-ui/core';
 import { auth } from '../other/firebase';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 
-const SignOut = () => {
-  return (
-    auth.currentUser && (
-      <button className="button is-danger is-light is-small" onClick={() => auth.signOut()}>
-        <FontAwesomeIcon icon={faSignOutAlt} />
-        &nbsp;&nbsp;Sign out
-      </button>
-    )
+const SignOut = () =>
+  auth.currentUser && (
+    <IconButton edge="end" onClick={() => auth.signOut()}>
+      <ExitToAppIcon />
+    </IconButton>
   );
-};
 
 export default SignOut;

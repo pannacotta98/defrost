@@ -5,9 +5,46 @@ import CreateList from './CreateList';
 import { AccountInfo } from './AccountInfo';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 import serverTypes from '../other/serverTypes';
-import { AnimatePresence, motion } from 'framer-motion';
-import './Nav.scss';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
+import {
+  Divider,
+  Drawer,
+  List,
+  ListItem,
+  AppBar,
+  IconButton,
+  Toolbar,
+  Typography,
+  createStyles,
+  makeStyles,
+  Theme,
+  ListItemText,
+  Box,
+  ListItemIcon,
+  LinearProgress,
+  ListSubheader,
+} from '@material-ui/core';
+import MenuIcon from '@material-ui/icons/Menu';
+import AddIcon from '@material-ui/icons/Add';
+import ListIcon from '@material-ui/icons/List';
+import { ErrorOutline } from '@material-ui/icons';
+
+// Style based on https://material-ui.com/components/app-bar/#bottom-app-bar
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    grow: {
+      flexGrow: 1,
+    },
+    fabButton: {
+      position: 'absolute',
+      zIndex: 1,
+      top: -30,
+      left: 0,
+      right: 0,
+      margin: '0 auto',
+    },
+  })
+);
 
 interface Props {
   activeListId: null | string;
@@ -16,102 +53,101 @@ interface Props {
 
 const Nav: React.FC<Props> = ({ activeListId, user }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(activeListId === null);
+  const classes = useStyles();
 
   const listListQuery = firestore.collection('itemLists').where('owner', '==', user.uid);
   const [lists, listsLoading, listsError] = useCollectionData<serverTypes.List>(listListQuery, {
     idField: 'id',
   });
 
-  const ListsList = () => (
-    <div className="navbar-item has-dropdown is-hoverable">
-      <div className="navbar-link">Selected list</div>
-      <div className="navbar-dropdown">
+  function TopBar() {
+    return (
+      <AppBar position="fixed" color="primary">
+        <Toolbar>
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="open drawer"
+            onClick={() => setIsMenuOpen(true)}
+          >
+            <MenuIcon />
+          </IconButton>
+          <Typography variant="h6">Put list</Typography>
+          <div className={classes.grow} />
+          {/* <IconButton color="inherit">
+            <SearchIcon />
+          </IconButton>
+          <IconButton edge="end" color="inherit">
+            <MoreIcon />
+          </IconButton> */}
+        </Toolbar>
+      </AppBar>
+    );
+  }
+
+  function ListsList() {
+    return (
+      <List>
         {lists ? (
-          lists.length > 0 &&
-          lists.map((list) => (
-            <div
-              key={list.id}
-              onClick={() => {
-                setIsMenuOpen(false);
-              }}
-              className={`navbar-item ${
-                !(activeListId && activeListId === list.id)
-                  ? 'has-text-grey'
-                  : 'has-background-primary-light'
-              }`}
-            >
-              <Link to={`/list/${list.id}`}>{list.name}</Link>
-            </div>
-          ))
+          lists.length > 0 && (
+            <>
+              {lists.map((list) => (
+                <ListItem
+                  button
+                  component={NavLink}
+                  to={`/list/${list.id}`}
+                  key={list.id}
+                  onClick={() => setIsMenuOpen(false)}
+                  activeClassName="Mui-selected"
+                >
+                  <ListItemIcon>
+                    <ListIcon />
+                  </ListItemIcon>
+                  <ListItemText>{list.name}</ListItemText>
+                </ListItem>
+              ))}
+
+              <CreateList user={user} />
+            </>
+          )
         ) : listsLoading ? (
-          <div className="navbar-item">Loading...</div>
+          <>
+            <ListSubheader>Loading</ListSubheader>
+            <LinearProgress />
+          </>
         ) : (
           listsError && (
-            <div className="navbar-item">
-              <p className="has-text-weight-bold has-text-danger">An error occured</p>
-              <p className="has-text-danger">{listsError.message}</p>
-            </div>
+            <ListItem>
+              <ListItemIcon>
+                <ErrorOutline color="error" />
+              </ListItemIcon>
+              <ListItemText
+                primary="Could not load lists"
+                secondary={listsError.message}
+                primaryTypographyProps={{ color: 'error' }}
+                secondaryTypographyProps={{ color: 'error' }}
+              />
+            </ListItem>
           )
         )}
-        <hr className="navbar-divider" />
-        <CreateList user={user} />
-      </div>
-    </div>
-  );
-
-  const NavBurger = () => (
-    <div
-      role="button"
-      className="navbar-burger"
-      aria-label="menu"
-      // aria-expanded="false" // TODO
-      data-target="navbarBasicExample"
-      onClick={() => setIsMenuOpen(!isMenuOpen)}
-    >
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-    </div>
-  );
+      </List>
+    );
+  }
 
   return (
     <>
-      <nav className="navbar is-primary" role="navigation" aria-label="main navigation">
-        <div className="navbar-brand">
-          <span className="is-size-4 has-text-weight-bold navbar-item">
-            Defrost{activeListId && ' — TODO'}
-          </span>
-          <NavBurger />
-        </div>
-
-        <AnimatePresence>
-          {isMenuOpen && (
-            <motion.div
-              initial={{ height: 0 }}
-              animate={{ height: 'auto' }}
-              exit={{ height: 0 }}
-              transition={{ duration: 0.2 }}
-              className="navbar-menu is-active"
-            >
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <div className="navbar-start">
-                  <ListsList />
-                </div>
-
-                <hr className="" />
-                <div className="navbar-end">
-                  <AccountInfo user={user} />
-                </div>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </nav>
+      <TopBar />
+      <Toolbar />
+      <Drawer anchor="left" open={isMenuOpen} onClose={() => setIsMenuOpen(false)}>
+        <Box p={2}>
+          <Typography variant="h4">DEFROST</Typography>
+          <Typography variant="subtitle1">Bippedibappediboop</Typography>
+        </Box>
+        <Divider />
+        <ListsList />
+        <Divider />
+        <AccountInfo user={user} />
+      </Drawer>
     </>
   );
 };

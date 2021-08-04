@@ -9,9 +9,7 @@ export function ListScreen({ user }: { user: firebase.User }) {
   return (
     <>
       <Nav activeListId={listId} user={user} />
-      <section className="section">
-        {listId && <ItemList user={user} activeListId={listId} />}
-      </section>
+      {listId && <ItemList user={user} activeListId={listId} />}
     </>
   );
 }

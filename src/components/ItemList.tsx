@@ -1,12 +1,23 @@
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState } from 'react';
 import serverTypes from '../other/serverTypes';
-import ListItem from './ListItem';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { firebase, firestore } from '../other/firebase';
-import SetItem from './SetItem';
+import SetItemRENAME from './SetItem';
 import { sortingFunctions } from '../other/sortingFunctions';
+import { Box, createStyles, Fab, List, makeStyles, Typography } from '@material-ui/core';
+import { Add, ErrorOutline } from '@material-ui/icons';
+import { FoodListItem } from './ListItem';
+import { FullScreenLoader } from './FullScreenLoader';
+
+const useStyles = makeStyles((theme) =>
+  createStyles({
+    fab: {
+      position: 'fixed',
+      bottom: theme.spacing(2),
+      right: theme.spacing(2),
+    },
+  })
+);
 
 interface Props {
   activeListId: string;
@@ -16,6 +27,7 @@ interface Props {
 const ItemList: React.FC<Props> = ({ activeListId, user }) => {
   // The item currently open in modal, 'closed' if none, or 'new' if adding item
   const [itemModal, setItemModal] = useState<serverTypes.Item | 'new' | 'closed'>('closed');
+  const classes = useStyles();
   // TODO SE TILL ATT KOLLA OM MAN HAR TILLGÅNG INNAN EN REQUEST SKICKAS
   const listQuery = firestore.collection('itemLists').doc(activeListId).collection('items');
   let [items, isLoading, error] = useCollectionData<serverTypes.Item>(listQuery, { idField: 'id' });
@@ -27,55 +39,56 @@ const ItemList: React.FC<Props> = ({ activeListId, user }) => {
   const filteredAndSortedItems = items.filter(filterCondition).sort(sortCondition);
 
   return (
-    <div className="has-navbar-fixed-bottom">
-      {/* TODO The layout here is very hacky */}
-      <div className="columns mb-6" style={{ marginTop: '-3rem' }}>
-        {isLoading ? (
-          <div className="loader-wrapper is-active">
-            <div className="loader is-loading"></div>
-          </div>
-        ) : error ? (
-          <div>
-            <h2 className="subtitle has-text-centered pt-6 has-text-danger">An error occured</h2>
-            <p className="has-text-centered has-text-danger">{error.message}</p>
-          </div>
+    <Box>
+      <List>
+        <FullScreenLoader open={isLoading} />
+        {error ? (
+          <Box py={6} px={2} textAlign="center">
+            <ErrorOutline color="error" fontSize="large" />
+            <Typography gutterBottom color="error" variant="h6">
+              An error occured
+            </Typography>
+            <Typography color="error" variant="body2">
+              {error.message}
+            </Typography>
+          </Box>
         ) : items.length < 1 ? (
-          <h2 className="subtitle has-text-centered pt-6">The list is empty</h2>
+          <Box py={6} px={2}>
+            <Typography variant="body1" align="center">
+              The list is empty
+            </Typography>
+          </Box>
         ) : filteredAndSortedItems.length < 1 ? (
-          <h2 className="subtitle has-text-centered pt-6">No item matches the current filter</h2>
+          <Box py={6} px={2}>
+            <Typography variant="body1" align="center">
+              No item matches the current filter
+            </Typography>
+          </Box>
         ) : (
           filteredAndSortedItems.map((item, idx) => (
-            <ListItem listId={activeListId} item={item} key={idx} onPress={setItemModal} /> // TODO Use id instead of index probably
+            <FoodListItem listId={activeListId} item={item} key={idx} onPress={setItemModal} /> // TODO Use id instead of index probably
           ))
         )}
-      </div>
-      <div className="navbar is-fixed-bottom is-primary columns is-mobile has-dropdown has-dropdown-up mb-0">
-        {/* <button className="button is-multiline is-primary navbar-item column">
-          <FontAwesomeIcon icon={faFilter} />
-          <p>Filter</p>
-        </button> */}
-        {/* <button className="button is-multiline is-primary navbar-item column">
-          <FontAwesomeIcon icon={faSortAmountUpAlt} />
-          <p>Sort</p>
-        </button> */}
-        <button
-          onClick={() => setItemModal('new')}
-          className="button is-multiline is-primary navbar-item column"
-        >
-          <FontAwesomeIcon icon={faPlus} />
-          <p>Add item</p>
-        </button>
-      </div>
+      </List>
+
+      <Fab
+        color="secondary"
+        aria-label="add"
+        className={classes.fab}
+        onClick={() => setItemModal('new')}
+      >
+        <Add />
+      </Fab>
 
       {itemModal !== 'closed' && (
-        <SetItem
+        <SetItemRENAME
           listId={activeListId}
           closeModal={() => setItemModal('closed')}
           selectedItem={itemModal === 'new' ? null : itemModal}
           user={user}
         />
       )}
-    </div>
+    </Box>
   );
 };
 
