@@ -4,7 +4,6 @@ import { isValidDate } from '../other/util';
 import { Formik, Form, Field, ErrorMessage, FormikErrors } from 'formik';
 import { firebase, firestore } from '../other/firebase';
 import serverTypes from '../other/serverTypes';
-import { motion } from 'framer-motion';
 import { dateToYMD } from './../other/util';
 
 interface FormValues {
@@ -93,19 +92,9 @@ const SetItem: React.FC<Props> = ({ listId, closeModal, selectedItem, user }) =>
       }}
     >
       {({ isSubmitting, values, errors }) => (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.2 }}
-          className="modal is-active"
-        >
+        <div className="modal is-active">
           <div className="modal-background"></div>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.2 }}
-            className="modal-content"
-          >
+          <div className="modal-content">
             <Form className="box">
               <h1 className="title">{selectedItem === null ? 'New item' : 'Update item'}</h1>
               <div className="field">
@@ -185,8 +174,8 @@ const SetItem: React.FC<Props> = ({ listId, closeModal, selectedItem, user }) =>
                 </div>
               </div>
             </Form>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       )}
     </Formik>
   );
