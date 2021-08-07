@@ -25,9 +25,8 @@ import {
   ListSubheader,
 } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
-import AddIcon from '@material-ui/icons/Add';
 import ListIcon from '@material-ui/icons/List';
-import { ErrorOutline } from '@material-ui/icons';
+import { ErrorOutline, ArrowBack } from '@material-ui/icons';
 
 // Style based on https://material-ui.com/components/app-bar/#bottom-app-bar
 const useStyles = makeStyles((theme: Theme) =>
@@ -72,7 +71,7 @@ const Nav: React.FC<Props> = ({ activeListId, user }) => {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6">Put list</Typography>
+          <Typography variant="h6">Put list name here</Typography>
           <div className={classes.grow} />
           {/* <IconButton color="inherit">
             <SearchIcon />
@@ -138,8 +137,19 @@ const Nav: React.FC<Props> = ({ activeListId, user }) => {
     <>
       <TopBar />
       <Toolbar />
+
       <Drawer anchor="left" open={isMenuOpen} onClose={() => setIsMenuOpen(false)}>
-        <Box p={2}>
+        <Box>
+          <IconButton
+            edge="end"
+            onClick={(event) => {
+              setIsMenuOpen(false);
+            }}
+          >
+            <ArrowBack />
+          </IconButton>
+        </Box>
+        <Box px={2} pb={2}>
           <Typography variant="h4">DEFROST</Typography>
           <Typography variant="subtitle1">Bippedibappediboop</Typography>
         </Box>

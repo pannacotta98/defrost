@@ -1,10 +1,27 @@
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Drawer, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
+import {
+  Drawer,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  TextField,
+  Box,
+  Typography,
+  Button,
+  makeStyles,
+  createStyles,
+} from '@material-ui/core';
 import { Add } from '@material-ui/icons';
-import { Formik, Form, Field, ErrorMessage, FormikErrors, FormikHelpers } from 'formik';
+import { Formik, FormikErrors, FormikHelpers } from 'formik';
 import React, { useState } from 'react';
 import { firebase, firestore } from '../other/firebase';
+
+const useStyles = makeStyles((theme) =>
+  createStyles({
+    button: {
+      marginTop: theme.spacing(2),
+    },
+  })
+);
 
 interface FormValues {
   name: string;
@@ -14,8 +31,8 @@ interface Props {
   user: firebase.User;
 }
 
-/** @deprecated */
 const CreateList = ({ user }: Props) => {
+  const classes = useStyles();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const initialValues: FormValues = { name: '' };
 
@@ -57,43 +74,53 @@ const CreateList = ({ user }: Props) => {
       </ListItem>
 
       <Drawer open={isModalOpen} anchor="bottom" onClose={() => setIsModalOpen(false)}>
-        <div className="box">
+        <Box px={2} pt={4} pb={4}>
+          <Typography gutterBottom variant="h4">
+            Create list
+          </Typography>
           <Formik initialValues={initialValues} validate={validate} onSubmit={submit}>
-            {({ isSubmitting, values, errors, setFieldValue }) => {
-              return (
-                <Form>
-                  <h1 className="title">New list</h1>
-                  <div className="field">
-                    <label className="label">Name</label>
-                    <div className="control">
-                      <Field
-                        className={`input ${errors.name && 'is-danger'}`}
-                        type="text"
-                        name="name"
-                        placeholder="Kyyyyyylskåp"
-                      />
-                    </div>
-                    <ErrorMessage className="help is-danger" name="name" component="div" />
-                  </div>
-                  <div className="field mt-5">
-                    <div className="buttons">
-                      <button type="submit" className="button is-primary" disabled={isSubmitting}>
-                        Create
-                      </button>
-                      <button
-                        type="button"
-                        className="button is-primary is-light"
-                        onClick={() => setIsModalOpen(false)}
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                </Form>
-              );
-            }}
+            {({ isSubmitting, values, errors, handleChange, touched, handleSubmit }) => (
+              <form onSubmit={handleSubmit}>
+                <TextField
+                  size="medium"
+                  fullWidth
+                  id="name"
+                  name="name"
+                  margin="normal"
+                  label="List name"
+                  variant="outlined"
+                  value={values.name}
+                  onChange={handleChange}
+                  error={touched.name && Boolean(errors.name)}
+                  helperText={touched.name && errors.name}
+                />
+
+                <Button
+                  color="primary"
+                  variant="contained"
+                  size="large"
+                  disableElevation
+                  fullWidth
+                  type="submit"
+                  disabled={isSubmitting}
+                  className={classes.button}
+                >
+                  Create list
+                </Button>
+
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  size="large"
+                  onClick={() => setIsModalOpen(false)}
+                  className={classes.button}
+                >
+                  Cancel
+                </Button>
+              </form>
+            )}
           </Formik>
-        </div>
+        </Box>
       </Drawer>
     </>
   );

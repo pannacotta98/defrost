@@ -1,5 +1,4 @@
 import React from 'react';
-import './App.scss';
 import { SignIn } from './components/SignIn';
 import { auth, firebase } from './other/firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
@@ -9,7 +8,6 @@ import Nav from './components/Nav';
 import { ThemeProvider } from '@material-ui/core';
 import { theme } from './theme';
 import { FullScreenLoader } from './components/FullScreenLoader';
-import { SetListScreen } from './components/SetListScreen';
 
 function App() {
   // const [user, isLoading, error] = useAuthState(auth);
@@ -32,7 +30,6 @@ function App() {
         ) : (
           <SignIn />
         )}
-        {/* <SetListScreen /> */}
       </BrowserRouter>
     </ThemeProvider>
   );
