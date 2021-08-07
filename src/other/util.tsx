@@ -1,5 +1,6 @@
 const _MS_PER_DAY = 1000 * 60 * 60 * 24;
 
+/** @deprecated */
 export function dayDiff(a: Date, b: Date) {
   // https://stackoverflow.com/questions/3224834/get-difference-between-2-dates-in-javascript
   // Discard the time and time-zone information.
@@ -9,7 +10,9 @@ export function dayDiff(a: Date, b: Date) {
   return Math.floor((utc2 - utc1) / _MS_PER_DAY);
 }
 
-/** Validates dates in the format 'yyyy-mm-dd' */
+/** Validates dates in the format 'yyyy-mm-dd'
+ * @deprecated
+ */
 export function isValidDate(dateString: string) {
   // https://stackoverflow.com/questions/6177975/how-to-validate-date-with-format-mm-dd-yyyy-in-javascript
 
@@ -42,6 +45,7 @@ export function isValidDate(dateString: string) {
   return day > 0 && day <= monthLength[month - 1];
 }
 
+/** @deprecated */
 export function dateToYMD(date: Date) {
   // https://stackoverflow.com/questions/3552461/how-to-format-a-javascript-date
   var d = date.getDate();

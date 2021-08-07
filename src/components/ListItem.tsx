@@ -1,41 +1,9 @@
 import React from 'react';
-import { dayDiff } from '../other/util';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExclamationCircle, faTimes } from '@fortawesome/free-solid-svg-icons';
 import serverTypes from '../other/serverTypes';
-import { firebase, firestore } from '../other/firebase';
-
-// How many days before expiration date to have warning color
-const WARNING_THRES = 7;
-
-const ExpText: React.FC<{ expDate: firebase.firestore.Timestamp | null }> = ({ expDate }) => {
-  if (expDate === null) {
-    return <p>No expiration date</p>;
-  }
-
-  const expiresInDays = dayDiff(new Date(), expDate.toDate());
-
-  if (expiresInDays === 0) {
-    return (
-      <p className="has-text-warning-dark">
-        <FontAwesomeIcon icon={faExclamationCircle} /> Expires today
-      </p>
-    );
-  } else if (expiresInDays < 0) {
-    return (
-      <p className="has-text-danger">
-        <FontAwesomeIcon icon={faTimes} /> Expired {-expiresInDays} days ago
-      </p>
-    );
-  } else {
-    return (
-      <p className={expiresInDays < WARNING_THRES ? 'has-text-warning-dark' : ''}>
-        {expiresInDays < WARNING_THRES && <FontAwesomeIcon icon={faExclamationCircle} />} Expires in{' '}
-        {expiresInDays} days
-      </p>
-    );
-  }
-};
+import { firestore } from '../other/firebase';
+import { IconButton, ListItem, ListItemSecondaryAction, ListItemText } from '@material-ui/core';
+import { DeleteOutline } from '@material-ui/icons';
+import { ExpDateText } from './ExpDateText';
 
 interface Props {
   listId: string;
@@ -43,7 +11,7 @@ interface Props {
   onPress: (item: serverTypes.Item) => void;
 }
 
-const ListItem: React.FC<Props> = ({ item, onPress, listId }) => {
+export function FoodListItem({ item, onPress, listId }: Props) {
   const removeItem = () => {
     firestore
       .collection('itemLists')
@@ -66,31 +34,24 @@ const ListItem: React.FC<Props> = ({ item, onPress, listId }) => {
   };
 
   return (
-    <div className="panel-block columns is-mobile" onClick={() => onPress(item)}>
-      <div className="column">
-        <h2 className="is-size-5">{item.name}</h2>
-        <ExpText expDate={item.expiresBy} />
-      </div>
-      <div className="column is-narrow">
-        <div className="field is-grouped">
-          <p className="control">
-            <button
-              type="button"
-              onClick={(event) => {
-                event.stopPropagation();
-                if (window.confirm(`Are you sure you want to remove “${item.name}”?`)) {
-                  removeItem();
-                }
-              }}
-              className="button is-primary"
-            >
-              &times;
-            </button>
-          </p>
-        </div>
-      </div>
-    </div>
+    <ListItem button onClick={() => onPress(item)}>
+      <ListItemText
+        primary={item.name}
+        secondary={<ExpDateText variant="body2" expDate={item.expiresBy} />}
+      />
+      <ListItemSecondaryAction>
+        <IconButton
+          edge="end"
+          onClick={(event) => {
+            event.stopPropagation();
+            if (window.confirm(`Are you sure you want to remove “${item.name}”?`)) {
+              removeItem();
+            }
+          }}
+        >
+          <DeleteOutline />
+        </IconButton>
+      </ListItemSecondaryAction>
+    </ListItem>
   );
-};
-
-export default ListItem;
+}

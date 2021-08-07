@@ -1,16 +1,28 @@
+import {
+  Avatar,
+  ListItem,
+  List,
+  ListItemAvatar,
+  ListItemText,
+  ListItemSecondaryAction,
+} from '@material-ui/core';
 import { firebase } from '../other/firebase';
 import SignOut from './SignOut';
 
-export const AccountInfo: React.FC<{ user: firebase.User }> = ({ user }) => (
-  <div className="navbar-item">
-    <span className="account-info">
-      {user.photoURL && (
-        <figure className="image is-32x32">
-          <img className="is-rounded" src={user.photoURL} alt="Logged in user" />
-        </figure>
-      )}
-      <span>{user.displayName}</span>
-      <SignOut />
-    </span>
-  </div>
-);
+export function AccountInfo({ user }: { user: firebase.User }) {
+  return (
+    <List>
+      <ListItem>
+        {user.photoURL && (
+          <ListItemAvatar>
+            <Avatar alt="Logged in user" src={user.photoURL} />
+          </ListItemAvatar>
+        )}
+        <ListItemText primary={user.displayName} secondary={user.email} />
+        <ListItemSecondaryAction>
+          <SignOut />
+        </ListItemSecondaryAction>
+      </ListItem>
+    </List>
+  );
+}

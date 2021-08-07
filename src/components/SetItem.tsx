@@ -1,16 +1,30 @@
 import React from 'react';
 import { GroceryType } from '../other/GroceryItem';
-import { isValidDate } from '../other/util';
-import { Formik, Form, Field, ErrorMessage, FormikErrors } from 'formik';
+import { Formik, FormikErrors, FormikHelpers } from 'formik';
 import { firebase, firestore } from '../other/firebase';
 import serverTypes from '../other/serverTypes';
-import { motion } from 'framer-motion';
-import { dateToYMD } from './../other/util';
+import { Box, Button, createStyles, makeStyles, TextField, Typography } from '@material-ui/core';
+import { KeyboardDatePicker } from '@material-ui/pickers';
+import { isValid } from 'date-fns';
+
+const useStyles = makeStyles((theme) =>
+  createStyles({
+    button: {
+      marginTop: theme.spacing(2),
+    },
+    hide: {
+      display: 'none',
+    },
+    radioButton: {
+      marginRight: theme.spacing(1.5),
+      marginTop: theme.spacing(1.5),
+    },
+  })
+);
 
 interface FormValues {
-  // TODO Fix
   name: string;
-  expDate: string;
+  expDate: Date | null;
   type: GroceryType;
 }
 
@@ -21,175 +35,172 @@ interface Props {
   closeModal: () => void;
 }
 
-/** A modal for creating or modifying items */
-const SetItem: React.FC<Props> = ({ listId, closeModal, selectedItem, user }) => {
-  return (
-    <Formik
-      initialValues={
-        selectedItem === null
-          ? { name: '', expDate: '', type: GroceryType.UNSET }
-          : {
-              name: selectedItem.name,
-              expDate:
-                selectedItem.expiresBy === null ? '' : dateToYMD(selectedItem.expiresBy.toDate()),
-              type: selectedItem.type,
-            }
+/** A component for creating or modifying items */
+function SetItem({ listId, closeModal, selectedItem, user }: Props) {
+  const classes = useStyles();
+
+  function submit(values: FormValues, { setSubmitting }: FormikHelpers<FormValues>) {
+    // setSubmitting(true);
+    const newItem: serverTypes.Item = {
+      name: values.name,
+      expiresBy:
+        values.expDate !== null ? firebase.firestore.Timestamp.fromDate(values.expDate) : null,
+      type: values.type,
+      added: firebase.firestore.Timestamp.now(),
+      addedBy: user.uid,
+    };
+
+    const itemCollection = firestore.collection('itemLists').doc(listId).collection('items');
+
+    if (selectedItem === null) {
+      // Add new item
+      itemCollection
+        .add(newItem)
+        .then(function () {
+          closeModal();
+        })
+        .catch(function (error) {
+          console.error('Could not add item', error);
+          alert('Could not add item — ' + error.message);
+          closeModal();
+        });
+    } else {
+      if (selectedItem.id) {
+        // Update existing item
+        itemCollection
+          .doc(selectedItem.id)
+          .set(newItem)
+          .then(function () {
+            closeModal();
+          })
+          .catch(function (error) {
+            console.error('Could not update item', error);
+            alert('Could not update item — ' + error.message);
+            closeModal();
+          });
+      } else {
+        console.error('Could not update item — id prop missing');
+        alert('An error occured when trying to update item :((');
+        closeModal();
       }
-      validate={(values: FormValues) => {
-        let errors: FormikErrors<FormValues> = {};
+    }
+  }
 
-        if (values.name === '') errors.name = 'Required';
-        if (!isValidDate(values.expDate) && values.expDate !== '') errors.expDate = 'Invalid date';
+  function validate(values: FormValues) {
+    let errors: FormikErrors<FormValues> = {};
 
-        return errors;
-      }}
-      onSubmit={(values, { setSubmitting }) => {
-        // setSubmitting(true);
-        const newItem: serverTypes.Item = {
-          name: values.name,
-          expiresBy:
-            values.expDate !== ''
-              ? firebase.firestore.Timestamp.fromDate(new Date(values.expDate))
-              : null,
-          type: values.type,
-          added: firebase.firestore.Timestamp.now(),
-          addedBy: user.uid,
+    if (values.name === '') errors.name = 'Required';
+    if (values.expDate !== null && !isValid(values.expDate)) errors.expDate = 'Invalid date';
+
+    return errors;
+  }
+
+  const initialFormValues =
+    selectedItem === null
+      ? { name: '', expDate: null, type: GroceryType.UNSET }
+      : {
+          name: selectedItem.name,
+          expDate: selectedItem.expiresBy === null ? null : selectedItem.expiresBy.toDate(),
+          type: selectedItem.type,
         };
 
-        const itemCollection = firestore.collection('itemLists').doc(listId).collection('items');
+  return (
+    <Box px={2} pt={4} pb={4}>
+      <Typography gutterBottom variant="h4">
+        {selectedItem === null ? 'New item' : 'Update item'}
+      </Typography>
 
-        if (selectedItem === null) {
-          // Add new item
-          itemCollection
-            .add(newItem)
-            .then(function () {
-              closeModal();
-            })
-            .catch(function (error) {
-              console.error('Could not add item', error);
-              alert('Could not add item — ' + error.message);
-              closeModal();
-            });
-        } else {
-          if (selectedItem.id) {
-            // Update existing item
-            itemCollection
-              .doc(selectedItem.id)
-              .set(newItem)
-              .then(function () {
-                closeModal();
-              })
-              .catch(function (error) {
-                console.error('Could not update item', error);
-                alert('Could not update item — ' + error.message);
-                closeModal();
-              });
-          } else {
-            console.error('Could not update item — id prop missing');
-            alert('An error occured when trying to update item :((');
-            closeModal();
-          }
-        }
-      }}
-    >
-      {({ isSubmitting, values, errors }) => (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.2 }}
-          className="modal is-active"
-        >
-          <div className="modal-background"></div>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.2 }}
-            className="modal-content"
-          >
-            <Form className="box">
-              <h1 className="title">{selectedItem === null ? 'New item' : 'Update item'}</h1>
-              <div className="field">
-                <label className="label">Item</label>
-                <div className="control">
-                  <Field
-                    autoFocus
-                    className={`input ${errors.name && 'is-danger'}`}
-                    type="text"
-                    name="name"
-                    placeholder="Suspicious meat"
-                  />
-                </div>
-                <ErrorMessage className="help is-danger" name="name" component="div" />
-              </div>
+      <Formik initialValues={initialFormValues} validate={validate} onSubmit={submit}>
+        {({ isSubmitting, values, errors, handleSubmit, touched, handleChange, setFieldValue }) => (
+          <form onSubmit={handleSubmit}>
+            <TextField
+              autoFocus
+              size="medium"
+              fullWidth
+              id="name"
+              name="name"
+              margin="normal"
+              label="Name of the item"
+              variant="outlined"
+              value={values.name}
+              onChange={handleChange}
+              error={touched.name && Boolean(errors.name)}
+              helperText={touched.name && errors.name}
+            />
 
-              {/* TODO Make none an option */}
-              <div className="field">
-                <label className="label">
-                  Expiration date{' '}
-                  <span className="has-text-grey has-text-weight-normal">
-                    (leave blank if none)
-                  </span>
-                </label>
-                <div className="control">
-                  <Field
-                    className={`input ${errors.expDate && 'is-danger'}`}
-                    type="text"
-                    name="expDate"
-                    pattern="[0-9\-]*"
-                    inputMode="numeric"
-                    placeholder="yyyy-mm-dd"
-                  />
-                </div>
-                <ErrorMessage className="help is-danger" name="expDate" component="div" />
-              </div>
+            <KeyboardDatePicker
+              clearable
+              fullWidth
+              disableToolbar
+              size="medium"
+              inputVariant="outlined"
+              format="yyyy-MM-dd"
+              margin="normal"
+              inputMode="numeric"
+              label="Expiration date (yyyy-mm-dd, blank if none)"
+              value={values.expDate}
+              onChange={(value) => {
+                setFieldValue('expDate', value);
+              }}
+              KeyboardButtonProps={{
+                'aria-label': 'change date',
+              }}
+              inputProps={{
+                pattern: '[0-9-]*',
+                inputMode: 'numeric',
+              }}
+            />
 
-              <div className="field">
-                <label className="label">Type</label>
-                <div className="control">
-                  <div className="buttons" role="group" aria-labelledby="my-radio-group">
-                    {Object.values(GroceryType).map((value) => (
-                      <label
-                        key={value}
-                        className={`button ${value === values.type ? 'is-primary' : ''}`}
-                      >
-                        <Field className="is-hidden" type="radio" name="type" value={value} />
-                        {value}
-                      </label>
-                    ))}
-                    {/* <div>Picked: {values.type}</div> */}
-                  </div>
-                </div>
-              </div>
-
-              <div className="field mt-6">
-                <div className="control">
-                  <button
-                    type="submit"
-                    className={`button is-primary is-fullwidth ${isSubmitting && 'is-loading'}`}
-                    disabled={isSubmitting}
+            {/* <Box py={1}>
+                <Typography variant="subtitle2">Type</Typography>
+                {Object.values(GroceryType).map((value) => (
+                  <Button
+                    size="large"
+                    component="label"
+                    disableElevation
+                    color={value === values.type ? 'primary' : 'default'}
+                    // variant={value === values.type ? 'contained' : 'outlined'}
+                    variant="outlined"
+                    key={value}
+                    startIcon={
+                      value === values.type ? <RadioButtonChecked /> : <RadioButtonUnchecked />
+                    }
+                    className={classes.radioButton}
                   >
-                    {selectedItem === null ? 'Add item' : 'Update'}
-                  </button>
-                </div>
-              </div>
-              <div className="field">
-                <div className="control">
-                  <button
-                    type="button"
-                    onClick={() => closeModal()}
-                    className="button is-primary is-light is-fullwidth"
-                    disabled={isSubmitting}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            </Form>
-          </motion.div>
-        </motion.div>
-      )}
-    </Formik>
+                    <Field className={classes.hide} type="radio" name="type" value={value} />
+                    {value}
+                  </Button>
+                ))}
+              </Box> */}
+
+            <Button // TODO Could some kind of loading indicator be used here?
+              color="primary"
+              variant="contained"
+              size="large"
+              disableElevation
+              fullWidth
+              type="submit"
+              disabled={isSubmitting}
+              className={classes.button}
+            >
+              {selectedItem === null ? 'Add item' : 'Update item'}
+            </Button>
+
+            <Button
+              type="button"
+              fullWidth
+              variant="outlined"
+              size="large"
+              onClick={() => closeModal()}
+              className={classes.button}
+            >
+              Cancel
+            </Button>
+          </form>
+        )}
+      </Formik>
+    </Box>
   );
-};
+}
 
 export default SetItem;
