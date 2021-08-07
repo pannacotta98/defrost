@@ -1,4 +1,5 @@
-# Getting Started with Create React App
+# DEFROST
+An app for keeping track of whatever food might is in your home. Currently not finished or deployed.
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
