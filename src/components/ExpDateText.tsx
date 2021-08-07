@@ -41,8 +41,13 @@ export function ExpDateText({
 
   if (expiresInDays === 0) {
     return (
-      <Typography component="span" variant={variant}>
-        Expires today!
+      <Typography
+        component="span"
+        variant={variant}
+        className={[classes.inlineIconFix, classes.warningText].join(' ')}
+      >
+        <ReportProblemOutlined fontSize="inherit" />
+        &nbsp;Expires today!
       </Typography>
     );
   } else if (expiresInDays < 0) {

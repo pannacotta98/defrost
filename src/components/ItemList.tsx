@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import serverTypes from '../other/serverTypes';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { firebase, firestore } from '../other/firebase';
-import SetItemRENAME from './SetItem';
+import SetItem from './SetItem';
 import { sortingFunctions } from '../other/sortingFunctions';
-import { Box, createStyles, Fab, List, makeStyles, Typography } from '@material-ui/core';
+import { Box, createStyles, Drawer, Fab, List, makeStyles, Typography } from '@material-ui/core';
 import { Add, ErrorOutline } from '@material-ui/icons';
 import { FoodListItem } from './ListItem';
 import { FullScreenLoader } from './FullScreenLoader';
@@ -80,14 +80,16 @@ const ItemList: React.FC<Props> = ({ activeListId, user }) => {
         <Add />
       </Fab>
 
-      {itemModal !== 'closed' && (
-        <SetItemRENAME
-          listId={activeListId}
-          closeModal={() => setItemModal('closed')}
-          selectedItem={itemModal === 'new' ? null : itemModal}
-          user={user}
-        />
-      )}
+      <Drawer open={itemModal !== 'closed'} anchor="bottom">
+        {itemModal !== 'closed' && (
+          <SetItem
+            listId={activeListId}
+            closeModal={() => setItemModal('closed')}
+            selectedItem={itemModal === 'new' ? null : itemModal}
+            user={user}
+          />
+        )}
+      </Drawer>
     </Box>
   );
 };

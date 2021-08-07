@@ -109,6 +109,7 @@ const CreateList = ({ user }: Props) => {
                 </Button>
 
                 <Button
+                  type="button"
                   fullWidth
                   variant="outlined"
                   size="large"
