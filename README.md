@@ -1,5 +1,5 @@
 # DEFROST
-An app for keeping track of whatever food might is in your home. Currently not finished or deployed.
+An app for keeping track of whatever food might be in your home. Currently not finished or deployed.
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
