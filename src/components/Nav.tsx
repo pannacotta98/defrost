@@ -23,10 +23,12 @@ import {
   ListItemIcon,
   LinearProgress,
   ListSubheader,
+  ListItemSecondaryAction,
 } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import ListIcon from '@material-ui/icons/List';
-import { ErrorOutline, ArrowBack } from '@material-ui/icons';
+import { ErrorOutline, ArrowBack, Share } from '@material-ui/icons';
+import { ShareList } from './ShareList';
 
 // Style based on https://material-ui.com/components/app-bar/#bottom-app-bar
 const useStyles = makeStyles((theme: Theme) =>
