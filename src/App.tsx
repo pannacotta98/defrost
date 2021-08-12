@@ -24,7 +24,7 @@ function App() {
           {user ? (
             <Switch>
               <Route path="/" exact>
-                <Nav activeListId={null} user={user} />
+                <Nav activeList={null} user={user} />
               </Route>
               <Route path="/list/:listId">
                 <ListScreen user={user} />

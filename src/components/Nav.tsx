@@ -23,7 +23,6 @@ import {
   ListItemIcon,
   LinearProgress,
   ListSubheader,
-  ListItemSecondaryAction,
 } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import ListIcon from '@material-ui/icons/List';
@@ -48,12 +47,12 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  activeListId: null | string;
+  activeList: null | serverTypes.List;
   user: firebase.User;
 }
 
-const Nav: React.FC<Props> = ({ activeListId, user }) => {
-  const [isMenuOpen, setIsMenuOpen] = useState(activeListId === null);
+const Nav: React.FC<Props> = ({ activeList, user }) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(activeList === null);
   const classes = useStyles();
 
   const listListQuery = firestore.collection('itemLists').where('owner', '==', user.uid);
@@ -73,14 +72,12 @@ const Nav: React.FC<Props> = ({ activeListId, user }) => {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6">Put list name here</Typography>
+          <Typography variant="h6">{activeList ? activeList.name : 'No list selected'}</Typography>
           <div className={classes.grow} />
           {/* <IconButton color="inherit">
             <SearchIcon />
-          </IconButton>
-          <IconButton edge="end" color="inherit">
-            <MoreIcon />
           </IconButton> */}
+          {activeList && <ShareList list={activeList} />}
         </Toolbar>
       </AppBar>
     );
@@ -142,12 +139,7 @@ const Nav: React.FC<Props> = ({ activeListId, user }) => {
 
       <Drawer anchor="left" open={isMenuOpen} onClose={() => setIsMenuOpen(false)}>
         <Box>
-          <IconButton
-            edge="end"
-            onClick={(event) => {
-              setIsMenuOpen(false);
-            }}
-          >
+          <IconButton edge="end" onClick={() => setIsMenuOpen(false)}>
             <ArrowBack />
           </IconButton>
         </Box>
