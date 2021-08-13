@@ -26,8 +26,8 @@ import {
 } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import ListIcon from '@material-ui/icons/List';
-import { ErrorOutline, ArrowBack, Share } from '@material-ui/icons';
-import { ShareList } from './ShareList';
+import { ErrorOutline, ArrowBack } from '@material-ui/icons';
+import { Share } from './Share';
 
 // Style based on https://material-ui.com/components/app-bar/#bottom-app-bar
 const useStyles = makeStyles((theme: Theme) =>
@@ -77,7 +77,7 @@ const Nav: React.FC<Props> = ({ activeList, user }) => {
           {/* <IconButton color="inherit">
             <SearchIcon />
           </IconButton> */}
-          {activeList && <ShareList list={activeList} />}
+          {activeList && <Share list={activeList} />}
         </Toolbar>
       </AppBar>
     );

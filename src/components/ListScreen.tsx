@@ -4,7 +4,6 @@ import { firebase, firestore } from '../other/firebase';
 import serverTypes from '../other/serverTypes';
 import ItemList from './ItemList';
 import Nav from './Nav';
-import { ShareList } from './ShareList';
 
 export function ListScreen({ user }: { user: firebase.User }) {
   const { listId } = useParams<{ listId: string }>();
