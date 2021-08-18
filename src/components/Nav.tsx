@@ -4,7 +4,7 @@ import { firebase, firestore } from '../other/firebase';
 import CreateList from './CreateList';
 import { AccountInfo } from './AccountInfo';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
-import serverTypes from '../other/serverTypes';
+import serverTypes from '../../shared/serverTypes';
 import { NavLink } from 'react-router-dom';
 import {
   Divider,
@@ -55,8 +55,15 @@ const Nav: React.FC<Props> = ({ activeList, user }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(activeList === null);
   const classes = useStyles();
 
-  const listListQuery = firestore.collection('itemLists').where('owner', '==', user.uid);
-  const [lists, listsLoading, listsError] = useCollectionData<serverTypes.List>(listListQuery, {
+  const listListOwnerQuery = firestore.collection('itemLists').where('owner', '==', user.uid);
+  const listsListOwnerResp = useCollectionData<serverTypes.List>(listListOwnerQuery, {
+    idField: 'id',
+  });
+
+  const listListSharedWithQuery = firestore
+    .collection('itemLists')
+    .where('sharedWith', 'array-contains', user.uid);
+  const listListSharedWithResp = useCollectionData<serverTypes.List>(listListSharedWithQuery, {
     idField: 'id',
   });
 
@@ -77,7 +84,7 @@ const Nav: React.FC<Props> = ({ activeList, user }) => {
           {/* <IconButton color="inherit">
             <SearchIcon />
           </IconButton> */}
-          {activeList && <Share list={activeList} />}
+          {activeList && <Share user={user} list={activeList} />}
         </Toolbar>
       </AppBar>
     );
@@ -85,49 +92,52 @@ const Nav: React.FC<Props> = ({ activeList, user }) => {
 
   function ListsList() {
     return (
+      // TODO Refactor this monstrosity when lists are stored differently in the backend
       <List>
-        {lists ? (
-          lists.length > 0 && (
-            <>
-              {lists.map((list) => (
-                <ListItem
-                  button
-                  component={NavLink}
-                  to={`/list/${list.id}`}
-                  key={list.id}
-                  onClick={() => setIsMenuOpen(false)}
-                  activeClassName="Mui-selected"
-                >
+        {[listsListOwnerResp, listListSharedWithResp].map(
+          ([lists, listsLoading, listsError], index) =>
+            lists ? (
+              lists.length > 0 && (
+                <React.Fragment key={index}>
+                  {lists.map((list) => (
+                    <ListItem
+                      button
+                      component={NavLink}
+                      to={`/list/${list.id}`}
+                      key={list.id}
+                      onClick={() => setIsMenuOpen(false)}
+                      activeClassName="Mui-selected"
+                    >
+                      <ListItemIcon>
+                        <ListIcon />
+                      </ListItemIcon>
+                      <ListItemText>{list.name}</ListItemText>
+                    </ListItem>
+                  ))}
+                </React.Fragment>
+              )
+            ) : listsLoading ? (
+              <React.Fragment key={index}>
+                <ListSubheader>Loading</ListSubheader>
+                <LinearProgress />
+              </React.Fragment>
+            ) : (
+              listsError && (
+                <ListItem key={index}>
                   <ListItemIcon>
-                    <ListIcon />
+                    <ErrorOutline color="error" />
                   </ListItemIcon>
-                  <ListItemText>{list.name}</ListItemText>
+                  <ListItemText
+                    primary="Could not load lists"
+                    secondary={listsError.message}
+                    primaryTypographyProps={{ color: 'error' }}
+                    secondaryTypographyProps={{ color: 'error' }}
+                  />
                 </ListItem>
-              ))}
-
-              <CreateList user={user} />
-            </>
-          )
-        ) : listsLoading ? (
-          <>
-            <ListSubheader>Loading</ListSubheader>
-            <LinearProgress />
-          </>
-        ) : (
-          listsError && (
-            <ListItem>
-              <ListItemIcon>
-                <ErrorOutline color="error" />
-              </ListItemIcon>
-              <ListItemText
-                primary="Could not load lists"
-                secondary={listsError.message}
-                primaryTypographyProps={{ color: 'error' }}
-                secondaryTypographyProps={{ color: 'error' }}
-              />
-            </ListItem>
-          )
+              )
+            )
         )}
+        <CreateList user={user} />
       </List>
     );
   }

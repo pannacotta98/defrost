@@ -10,6 +10,7 @@ import { theme } from './theme';
 import { FullScreenLoader } from './components/FullScreenLoader';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
+import { InviteAccept } from './components/InviteAccept';
 
 function App() {
   // const [user, isLoading, error] = useAuthState(auth);
@@ -28,6 +29,9 @@ function App() {
               </Route>
               <Route path="/list/:listId">
                 <ListScreen user={user} />
+              </Route>
+              <Route path="/invite/:inviteId">
+                <InviteAccept />
               </Route>
             </Switch>
           ) : (

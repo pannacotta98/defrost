@@ -1,3 +1,3 @@
-import serverTypes from './serverTypes';
+import serverTypes from '../../shared/serverTypes';
 
 export type FilterFunction = (item: serverTypes.Item) => boolean;

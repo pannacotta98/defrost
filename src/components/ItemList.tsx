@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import serverTypes from '../other/serverTypes';
+import serverTypes from '../../shared/serverTypes';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { firebase, firestore } from '../other/firebase';
 import SetItem from './SetItem';
@@ -28,7 +28,7 @@ const ItemList: React.FC<Props> = ({ activeListId, user }) => {
   // The item currently open in modal, 'closed' if none, or 'new' if adding item
   const [itemModal, setItemModal] = useState<serverTypes.Item | 'new' | 'closed'>('closed');
   const classes = useStyles();
-  // TODO SE TILL ATT KOLLA OM MAN HAR TILLGÅNG INNAN EN REQUEST SKICKAS
+
   const listQuery = firestore.collection('itemLists').doc(activeListId).collection('items');
   let [items, isLoading, error] = useCollectionData<serverTypes.Item>(listQuery, { idField: 'id' });
   if (!items) items = [];

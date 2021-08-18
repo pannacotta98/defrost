@@ -1,4 +1,4 @@
-import serverTypes from './serverTypes';
+import serverTypes from '../../shared/serverTypes';
 
 export type sortingFunction = (item1: serverTypes.Item, item2: serverTypes.Item) => number;
 
