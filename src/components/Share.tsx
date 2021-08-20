@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import {
   Avatar,
   Box,
@@ -10,6 +10,7 @@ import {
   DialogTitle,
   Drawer,
   IconButton,
+  InputAdornment,
   LinearProgress,
   List,
   ListItem,
@@ -26,7 +27,8 @@ import firebase from 'firebase';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import ShareIcon from '@material-ui/icons/Share';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
-import { testCallableFunction } from './../other/firebase';
+import FileCopyOutlinedIcon from '@material-ui/icons/FileCopyOutlined';
+import { FullScreenLoader } from './FullScreenLoader';
 
 interface Props {
   list: serverTypes.List;
@@ -56,6 +58,8 @@ interface ShareListProps {
 
 function ShareList({ list, setIsOpen, user }: ShareListProps) {
   const [newInviteLink, setNewInviteLink] = useState<string | null>(null);
+  const [inviteIsLoading, setInviteIsLoading] = useState(false);
+  const inviteLinkFieldRef = useRef<HTMLInputElement>(null);
 
   // TOOD Eliminate these queries with denormalized data
   const sharedWithQuery = firestore
@@ -134,14 +138,16 @@ function ShareList({ list, setIsOpen, user }: ShareListProps) {
             <ListItem
               button
               onClick={() => {
-                testCallableFunction().then((s) => console.dir(s));
+                setInviteIsLoading(true);
                 createInvite({ listId: list.id })
                   .then((s) => {
                     setNewInviteLink(s.data);
+                    setInviteIsLoading(false);
                   })
                   .catch((err) => {
                     console.error(err.message);
                     alert('Something went wrong with the invite');
+                    setInviteIsLoading(false);
                   });
               }}
             >
@@ -174,25 +180,39 @@ function ShareList({ list, setIsOpen, user }: ShareListProps) {
         variant="outlined"
         size="large"
         onClick={() => setIsOpen(false)}
-        // className={classes.button}
       >
         Close
       </Button>
 
+      <FullScreenLoader open={inviteIsLoading} />
+
       <Dialog open={newInviteLink !== null} onClose={() => setNewInviteLink(null)}>
         <DialogTitle>Here’s your invite link</DialogTitle>
         <DialogContent>
-          <DialogContentText>The link has been copied to your clipboard</DialogContentText>
+          {/* <DialogContentText>The link has been copied to your clipboard</DialogContentText> */}
           <Box mb={1}>
             <TextField
+              inputRef={inviteLinkFieldRef}
               fullWidth
               autoFocus
               variant="outlined"
               defaultValue={newInviteLink}
-              InputProps={{ readOnly: true }}
-              onFocus={(event) => {
-                event.target.select();
-                document.execCommand('copy');
+              InputProps={{
+                readOnly: true,
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => {
+                        if (inviteLinkFieldRef) {
+                          inviteLinkFieldRef.current?.select();
+                          document.execCommand('copy');
+                        }
+                      }}
+                    >
+                      <FileCopyOutlinedIcon />
+                    </IconButton>
+                  </InputAdornment>
+                ),
               }}
             />
           </Box>
