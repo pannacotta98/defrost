@@ -6,7 +6,7 @@ const INVITE_TIMEOUT_MINUTES = 15;
 
 admin.initializeApp();
 
-/** An invite as stored in `invites/` */
+/** An invite as stored in `invites/` in cloud firestore */
 interface Invite {
   listId: string;
   expiresBy: admin.firestore.Timestamp;
@@ -34,9 +34,11 @@ export const createInvite = functions.https.onCall(async (inviteCreationRequest,
     .firestore()
     .collection('itemLists')
     .doc(inviteCreationRequest.listId)
-    .get();
-  const listTheInviteShouldPointTo = listSnapshot.data() as serverTypes.List; // FIXME What if it doesnt exist?
-  // TODO Try/catch osv?
+    .get()
+    .catch(() => {
+      throw new functions.https.HttpsError('permission-denied', 'Could not find list');
+    });
+  const listTheInviteShouldPointTo = listSnapshot.data() as serverTypes.List;
 
   if (context.auth.uid !== listTheInviteShouldPointTo.owner) {
     throw new functions.https.HttpsError(
@@ -53,12 +55,7 @@ export const createInvite = functions.https.onCall(async (inviteCreationRequest,
   };
   const inviteRef = await admin.firestore().collection('invites').add(invite);
 
-  const inviteId = inviteRef.id;
-
-  // functions.logger.info('test!', { structuredData: true });
-  return inviteId;
-
-  // TODO Try/catch osv?
+  return inviteRef.id;
 });
 
 /**
@@ -94,7 +91,6 @@ export const acceptInvite = functions.https.onCall(async (inviteAcceptRequest, c
   const invite = inviteSnapshot.data() as Invite;
 
   if (hasExpired(invite)) {
-    // FIXME Somehow this wont really work
     throw new functions.https.HttpsError('permission-denied', 'The invite has expired');
   }
 
@@ -111,8 +107,6 @@ export const acceptInvite = functions.https.onCall(async (inviteAcceptRequest, c
 
   return invite.listId;
 });
-
-// TODO What happens if the list is removed while invite in progress?
 
 function hasExpired(invite: Invite) {
   return invite.expiresBy < admin.firestore.Timestamp.now();
