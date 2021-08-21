@@ -4,7 +4,7 @@ import { firebase, firestore } from '../other/firebase';
 import CreateList from './CreateList';
 import { AccountInfo } from './AccountInfo';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
-import serverTypes from '../other/serverTypes';
+import serverTypes from '../../shared/serverTypes';
 import { NavLink } from 'react-router-dom';
 import {
   Divider,
@@ -27,6 +27,7 @@ import {
 import MenuIcon from '@material-ui/icons/Menu';
 import ListIcon from '@material-ui/icons/List';
 import { ErrorOutline, ArrowBack } from '@material-ui/icons';
+import { Share } from './Share';
 
 // Style based on https://material-ui.com/components/app-bar/#bottom-app-bar
 const useStyles = makeStyles((theme: Theme) =>
@@ -46,16 +47,23 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  activeListId: null | string;
+  activeList: null | serverTypes.List;
   user: firebase.User;
 }
 
-const Nav: React.FC<Props> = ({ activeListId, user }) => {
-  const [isMenuOpen, setIsMenuOpen] = useState(activeListId === null);
+const Nav: React.FC<Props> = ({ activeList, user }) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(activeList === null);
   const classes = useStyles();
 
-  const listListQuery = firestore.collection('itemLists').where('owner', '==', user.uid);
-  const [lists, listsLoading, listsError] = useCollectionData<serverTypes.List>(listListQuery, {
+  const listListOwnerQuery = firestore.collection('itemLists').where('owner', '==', user.uid);
+  const listsListOwnerResp = useCollectionData<serverTypes.List>(listListOwnerQuery, {
+    idField: 'id',
+  });
+
+  const listListSharedWithQuery = firestore
+    .collection('itemLists')
+    .where('sharedWith', 'array-contains', user.uid);
+  const listListSharedWithResp = useCollectionData<serverTypes.List>(listListSharedWithQuery, {
     idField: 'id',
   });
 
@@ -71,14 +79,12 @@ const Nav: React.FC<Props> = ({ activeListId, user }) => {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6">Put list name here</Typography>
+          <Typography variant="h6">{activeList ? activeList.name : 'No list selected'}</Typography>
           <div className={classes.grow} />
           {/* <IconButton color="inherit">
             <SearchIcon />
-          </IconButton>
-          <IconButton edge="end" color="inherit">
-            <MoreIcon />
           </IconButton> */}
+          {activeList && <Share user={user} list={activeList} />}
         </Toolbar>
       </AppBar>
     );
@@ -86,49 +92,52 @@ const Nav: React.FC<Props> = ({ activeListId, user }) => {
 
   function ListsList() {
     return (
+      // TODO Refactor this monstrosity when lists are stored differently in the backend
       <List>
-        {lists ? (
-          lists.length > 0 && (
-            <>
-              {lists.map((list) => (
-                <ListItem
-                  button
-                  component={NavLink}
-                  to={`/list/${list.id}`}
-                  key={list.id}
-                  onClick={() => setIsMenuOpen(false)}
-                  activeClassName="Mui-selected"
-                >
+        {[listsListOwnerResp, listListSharedWithResp].map(
+          ([lists, listsLoading, listsError], index) =>
+            lists ? (
+              lists.length > 0 && (
+                <React.Fragment key={index}>
+                  {lists.map((list) => (
+                    <ListItem
+                      button
+                      component={NavLink}
+                      to={`/list/${list.id}`}
+                      key={list.id}
+                      onClick={() => setIsMenuOpen(false)}
+                      activeClassName="Mui-selected"
+                    >
+                      <ListItemIcon>
+                        <ListIcon />
+                      </ListItemIcon>
+                      <ListItemText>{list.name}</ListItemText>
+                    </ListItem>
+                  ))}
+                </React.Fragment>
+              )
+            ) : listsLoading ? (
+              <React.Fragment key={index}>
+                <ListSubheader>Loading</ListSubheader>
+                <LinearProgress />
+              </React.Fragment>
+            ) : (
+              listsError && (
+                <ListItem key={index}>
                   <ListItemIcon>
-                    <ListIcon />
+                    <ErrorOutline color="error" />
                   </ListItemIcon>
-                  <ListItemText>{list.name}</ListItemText>
+                  <ListItemText
+                    primary="Could not load lists"
+                    secondary={listsError.message}
+                    primaryTypographyProps={{ color: 'error' }}
+                    secondaryTypographyProps={{ color: 'error' }}
+                  />
                 </ListItem>
-              ))}
-
-              <CreateList user={user} />
-            </>
-          )
-        ) : listsLoading ? (
-          <>
-            <ListSubheader>Loading</ListSubheader>
-            <LinearProgress />
-          </>
-        ) : (
-          listsError && (
-            <ListItem>
-              <ListItemIcon>
-                <ErrorOutline color="error" />
-              </ListItemIcon>
-              <ListItemText
-                primary="Could not load lists"
-                secondary={listsError.message}
-                primaryTypographyProps={{ color: 'error' }}
-                secondaryTypographyProps={{ color: 'error' }}
-              />
-            </ListItem>
-          )
+              )
+            )
         )}
+        <CreateList user={user} />
       </List>
     );
   }
@@ -140,12 +149,7 @@ const Nav: React.FC<Props> = ({ activeListId, user }) => {
 
       <Drawer anchor="left" open={isMenuOpen} onClose={() => setIsMenuOpen(false)}>
         <Box>
-          <IconButton
-            edge="end"
-            onClick={(event) => {
-              setIsMenuOpen(false);
-            }}
-          >
+          <IconButton edge="end" onClick={() => setIsMenuOpen(false)}>
             <ArrowBack />
           </IconButton>
         </Box>

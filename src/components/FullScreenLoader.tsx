@@ -3,7 +3,7 @@ import { Backdrop, CircularProgress, makeStyles, createStyles } from '@material-
 const useStyles = makeStyles((theme) =>
   createStyles({
     backdrop: {
-      backgroundColor: theme.palette.secondary.main,
+      backgroundColor: theme.palette.primary.main,
       color: 'white',
       zIndex: 20000,
     },

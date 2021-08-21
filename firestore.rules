@@ -1,0 +1,50 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /users/{userId} {
+      allow read, write: if request.auth.uid == userId;
+      // TODO Investigate ways to avoid users/ being completely
+      // open to reads
+      //allow read: if true;
+    }
+
+    match /itemLists/{listId} {
+      function ownerOrSharedWith() {
+        let isOwner = request.auth.uid == resource.data.owner;
+        let isSharedWith = request.auth.uid in resource.data.sharedWith;
+        return isOwner || isSharedWith;
+      }
+
+      allow read: if ownerOrSharedWith();
+      allow create: if request.auth.uid == request.resource.data.owner;
+
+      // Grocery items
+      match /items/{itemId} {
+        function ownerOfListOrSharedWith() {
+          let ownerOfList = request.auth.uid == get(/databases/$(database)/documents/itemLists/$(listId)).data.owner;
+          let listSharedWith = request.auth.uid in get(/databases/$(database)/documents/itemLists/$(listId)).data.sharedWith;
+          return ownerOfList || listSharedWith;
+        }
+        
+        //function itemUpdateIsValid() {
+        //}
+
+        allow read, delete: if ownerOfListOrSharedWith();
+        allow create: if ownerOfListOrSharedWith()
+          && request.auth.uid == request.resource.data.addedBy;
+        allow update: if ownerOfListOrSharedWith();
+        
+
+        // TODO Make sure addedBy can not be updated, also added date
+        // and also probably validate pretty much everything
+      }
+
+    }
+
+  }
+
+  match /{document=**} {
+    allow read, write: if false;
+  }
+}

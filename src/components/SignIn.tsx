@@ -55,7 +55,7 @@ export function SignIn() {
   const classes = useStyles();
 
   return (
-    <Box height="100vh" bgcolor="secondary.main" py={20}>
+    <Box height="100vh" bgcolor="primary.main" py={20}>
       <Typography align="center" variant="h2" className={classes.logoText}>
         DEFROST
       </Typography>

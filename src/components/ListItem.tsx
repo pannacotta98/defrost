@@ -1,5 +1,5 @@
 import React from 'react';
-import serverTypes from '../other/serverTypes';
+import serverTypes from '../../shared/serverTypes';
 import { firestore } from '../other/firebase';
 import { IconButton, ListItem, ListItemSecondaryAction, ListItemText } from '@material-ui/core';
 import { DeleteOutline } from '@material-ui/icons';

@@ -2,7 +2,7 @@ import React from 'react';
 import { GroceryType } from '../other/GroceryItem';
 import { Formik, FormikErrors, FormikHelpers } from 'formik';
 import { firebase, firestore } from '../other/firebase';
-import serverTypes from '../other/serverTypes';
+import serverTypes from '../../shared/serverTypes';
 import { Box, Button, createStyles, makeStyles, TextField, Typography } from '@material-ui/core';
 import { KeyboardDatePicker } from '@material-ui/pickers';
 import { isValid } from 'date-fns';
